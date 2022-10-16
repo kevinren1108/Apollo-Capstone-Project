@@ -5,7 +5,7 @@ function LeftSection() {
     
 		<ul className=" list-disc text-xl text-white" >
 			<li className=" px-5 pd-2">
-				The main purpose of making this front-end page is to 
+				The main purpose of making this frontend page is to 
 				verify the feasibility in our project
 			</li>
 			<li className=" px-5 pt-10">
