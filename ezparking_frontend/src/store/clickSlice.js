@@ -1,10 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-  clickLog: {
-    click: [0,0],
-
-  }
+  clickLog: []
 }
 
 
@@ -14,9 +11,11 @@ const clickSlice = createSlice({
   reducers:{
     clickAdd(state, action) {
       const { lng, lat } = action.payload;
-      state.clickLog = {
-        click: [lng, lat],
-      };
+      
+      state.clickLog = [
+        ...state.clickLog, 
+        [lat.toFixed(5), lng.toFixed(5)]
+      ]
     }
   }
 

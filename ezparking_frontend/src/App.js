@@ -2,11 +2,8 @@ import CoordinateForm from "./components/CoordinateForm"
 import TopSection from "./components/TopSection"
 import LeftSection from "./components/LeftSection"
 import Map from "./components/Map";
-import nodejsLogo from "./svg/nodejs.svg";
-import reactLogo from "./svg/react.svg";
-import reduxLogo from "./svg/redux.svg";
-import googleCloud from "./svg/googleCloud.svg";
-import googleMap from "./svg/googleMap.svg";
+import TechStack from "./components/TechStack";
+
 function App() {
   
 
@@ -30,15 +27,10 @@ function App() {
       </div>
 
       <div className="row-start-6 row-end-7 col-start-2 col-end-6 bg-[#055c8b] rounded-md drop-shadow p-10">
-        <img className="h-20 inline pr-5" src={nodejsLogo} alt="nodejs" />
-        <img className="h-20 inline pr-5" src={reactLogo} alt="react" />
-        <img className="h-20 inline pr-5" src={reduxLogo} alt="redux" />
-        <img className="h-20 inline pr-5" src={googleCloud} alt="gcloud" />
-        <img className="h-20 inline pr-5" src={googleMap} alt="gmap" />
+        <TechStack />
       </div>
 
       <div className="row-start-7 row-span-5">
-
       </div>
 
     </div>

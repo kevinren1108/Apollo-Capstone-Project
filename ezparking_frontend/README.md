@@ -4,6 +4,13 @@ The purpose of this project is to verify whether our ideas are technically feasi
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Set-up Your API Key
+Open [https://developers.google.com/maps/documentation/javascript/get-api-key](https://developers.google.com/maps/documentation/javascript/get-api-key) to get your Google Map Platform API Key.
+Then create a .env file in this folder, inside the .env file, name your API Key as REACT_APP_API_KEY
+
+For example 
+`REACT_APP_API_KEY = AIzaSyD6lqqwe123312hgjhjz8lmWLpwNE`
+W
 ## Available Scripts
 
 In the project directory, you can run:
