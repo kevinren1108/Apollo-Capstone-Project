@@ -3,6 +3,7 @@ Driving is one of the preferred means of transportation for modern people, and v
 
 # Project vlogs
 [Project vlog video #1](https://youtu.be/MFvi8rMCnk8) 
+[Project vlog video #2](https://youtu.be/5cvXk_ntv1g) 
 
 # License 
 [MIT Licence](https://www.mit.edu/~amini/LICENSE.md)
