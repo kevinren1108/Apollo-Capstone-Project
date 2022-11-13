@@ -10,8 +10,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -50,7 +48,6 @@ public class adminController {
         UpdateWrapper<parking> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("name",name).set("longitude", longitude);
         parkingMapper.update(null,updateWrapper);
-
         return ResponseResult.okResult(200,"ok");
     }
 

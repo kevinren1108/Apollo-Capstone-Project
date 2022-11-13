@@ -14,11 +14,12 @@ import java.util.List;
 @NoArgsConstructor
 public class LoginUser implements UserDetails {
 
+
     private User user;
     private List<String> permissions;
 
 
-
+    public String getRole(){return user.getRole();}
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

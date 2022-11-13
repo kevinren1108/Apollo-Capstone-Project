@@ -1,6 +1,8 @@
 package com.apollo.config;
 
 
+import com.apollo.filter.JwtAuthenticationTokenFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +22,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
+    @Autowired
+    private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
 
    // @Autowired
     //AuthenticationEntryPoint authenticationEntryPoint;
@@ -42,8 +46,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/logout").authenticated()
                 .antMatchers("/user/userInfo").authenticated()
 //                .antMatchers("/upload").authenticated()
+
                 // 除上面外的所有请求全部不需要认证即可访问
                 .anyRequest().permitAll();
+        http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+        //允许跨域
+        http.cors();
 
     }
 

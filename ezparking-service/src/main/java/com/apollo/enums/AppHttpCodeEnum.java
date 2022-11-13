@@ -4,20 +4,21 @@ public enum AppHttpCodeEnum {
     // 成功
     SUCCESS(200,"success"),
     // 登录
-    NEED_LOGIN(401,"需要登录后操作"),
-    NO_OPERATOR_AUTH(403,"无权限操作"),
-    SYSTEM_ERROR(500,"出现错误"),
-    USERNAME_EXIST(501,"用户名已存在"),
-     PHONENUMBER_EXIST(502,"手机号已存在"), EMAIL_EXIST(503, "邮箱已存在"),
-    REQUIRE_USERNAME(504, "必需填写用户名"),
-    CONTENT_NOT_NULL(506, "评论内容不能为空"),
-    FILE_TYPE_ERROR(507, "文件类型错误，请上传png文件"),
-    USERNAME_NOT_NULL(508, "用户名不能为空"),
-    NICKNAME_NOT_NULL(509, "昵称不能为空"),
-    PASSWORD_NOT_NULL(510, "密码不能为空"),
-    EMAIL_NOT_NULL(511, "邮箱不能为空"),
-    NICKNAME_EXIST(512, "昵称已存在"),
-    LOGIN_ERROR(505,"用户名或密码错误");
+    NEED_LOGIN(401,"You need to log in and perform this operation"),
+    NO_OPERATOR_AUTH(403,"Operation without Permission"),
+    SYSTEM_ERROR(500,"error occurred"),
+    USERNAME_EXIST(501,"The user name already exists"),
+     PHONENUMBER_EXIST(502,"The mobile phone number already exists"),
+    EMAIL_EXIST(503, "The mailbox already exists.\n"),
+    REQUIRE_USERNAME(504, "The user name is required"),
+    CONTENT_NOT_NULL(506, "Comment content cannot be empty"),
+    FILE_TYPE_ERROR(507, "The file type is incorrect. Please upload the png file"),
+    USERNAME_NOT_NULL(508, "The user name cannot be empty"),
+    NICKNAME_NOT_NULL(509, "Nicknames cannot be empty"),
+    PASSWORD_NOT_NULL(510, "The password cannot be empty"),
+    EMAIL_NOT_NULL(511, "The mailbox cannot be empty"),
+    NICKNAME_EXIST(512, "Nicknames already exist"),
+    LOGIN_ERROR(505,"The user name or password is incorrect");
     int code;
     String msg;
 
