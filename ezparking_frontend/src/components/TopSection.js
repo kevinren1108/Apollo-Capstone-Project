@@ -1,20 +1,11 @@
 import React from 'react'
 
-function TopSection() {
+function TopSection({itemName, itemValue}) {
   return (
-    <div>
-      <div className="text-3xl text-white">
-        Welcome 
-      </div>
-      <div className="text-2xl text-white">
-        EZparking frontend demo
-      </div>
-      <div className="text-sm text-right text-white">
-        Team Appllo Present
-      </div>
+    <div className=" bg-[#ffffff] rounded-md drop-shadow p-10 ">  
+      <p className=' text-2xl text-gray-400 text-center '>{itemName}</p>
+      <p className=' text-4xl font-bold text-center'>{itemValue}</p>
     </div>
-      
-    
   )
 }
 

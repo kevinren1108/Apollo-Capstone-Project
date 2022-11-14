@@ -29,7 +29,7 @@ function Map(props) {
     <GoogleMap 
       zoom={16}
       center={{lat: 50.417884, lng:-104.588749}}
-      mapContainerClassName="h-96"
+      mapContainerClassName="h-full"
       onClick={handleClick}
     >
     </GoogleMap>

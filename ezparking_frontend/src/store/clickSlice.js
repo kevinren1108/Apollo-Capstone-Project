@@ -14,7 +14,7 @@ const clickSlice = createSlice({
       
       state.clickLog = [
         ...state.clickLog, 
-        [lat.toFixed(5), lng.toFixed(5)]
+        [lat.toFixed(3), lng.toFixed(3)]
       ]
     }
   }
