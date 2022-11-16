@@ -6,35 +6,30 @@ function CoordinateForm() {
   const state = useSelector((state) => state.clicked)
   return (
     <div>
-      <label className=" text-3xl text-white ">
-        Coordinates
-      </label>
-      <div className='text-white'>
-        {
-          state.clickLog.length === 0 ? "This table will record the clicked coordinates on map " : ""
-        }
+      <div className=" bg-white ring rounded-lg text-blue-700 px-1 py-10 text-center">
+        Edit Parking Lots
       </div>
-      <table className=" table-fixed border-collapse border border-white mt-4">
+      <div className=" bg-white drop-shadow rounded-lg text-black-700 px-1 py-10 my-5 text-center">
+        Edit Parking Lots
+      </div>
+      <table className=" table-fixed drop-shadow  border-collapse border mt-4 w-full ">
         <thead>
           <tr>
-            <th className=" w-1/3 border text-white border-white ">ID</th>
-            <th className=" w-1/3 border text-white border-white ">Lat</th>
-            <th className=" w-1/3 border text-white border-white ">Lng</th>
-            
-
+            <th className=" w-1/3 border ">ID</th>
+            <th className=" w-1/3 border ">Lat</th>
+            <th className=" w-1/3 border ">Lng</th>
           </tr>
         </thead>
         <tbody>
           { 
             state.clickLog.map((k, v) => 
               <tr>
-                <td className="border text-white border-white" key={k[0]+1} >{v}</td>
-                <td className="border text-white border-white" key={k[0]+2} >{k[0]}</td>
-                <td className="border text-white border-white" key={k[0]+3} >{k[1]}</td>
+                <td className="border " key={k[0]+1} >{v}</td>
+                <td className="border " key={k[0]+2} >{k[0]}</td>
+                <td className="border " key={k[0]+3} >{k[1]}</td>
               </tr>  
             )
           }
-              
         </tbody>
       </table>
     </div>
