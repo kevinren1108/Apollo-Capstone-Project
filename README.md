@@ -8,3 +8,6 @@ Driving is one of the preferred means of transportation for modern people, and v
 
 # License 
 [MIT Licence](https://www.mit.edu/~amini/LICENSE.md)
+
+# Roadmap
+[Project Roadmap](https://cultured-attraction-29e.notion.site/09f98feff5954c5eae4582e951a5a931?v=146a5f3935934354ac3b003aadd3a395)
