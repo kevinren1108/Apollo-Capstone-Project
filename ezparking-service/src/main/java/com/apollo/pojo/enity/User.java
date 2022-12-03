@@ -1,5 +1,6 @@
 package com.apollo.pojo.enity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -11,11 +12,20 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @TableName("User")
 public class User {
-    @TableId
+    @TableId(type = IdType.AUTO)
     private Long id;
     private String name;
     private String password;
     private String email;
+    private  String role;
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getRole() {
+        return role;
+    }
 
     public Long getId() {
         return id;

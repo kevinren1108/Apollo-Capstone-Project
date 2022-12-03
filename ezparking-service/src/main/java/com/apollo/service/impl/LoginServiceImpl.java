@@ -14,9 +14,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
-
+@Transactional(rollbackFor = Exception.class)
 @Service
 public class LoginServiceImpl implements LoginService {
     @Autowired
@@ -26,17 +27,21 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public ResponseResult login(User user) {
+
         UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(user.getName(),user.getPassword());
+        System.out.println(authenticationToken);
         Authentication authenticate= authenticationManager.authenticate(authenticationToken);
+        System.out.println("hahahahahahaaha");
         if(Objects.isNull(authenticate)){
-            throw new RuntimeException("用户名或密码错误");
+            throw new RuntimeException("user name or password is wrong");
 
         }
         //获取userid 生成token
         LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
         String userId = loginUser.getUser().getId().toString();
+        //generator jwt token
         String jwt = JwtUtil.createJWT(userId);
-        //把用户信息存入redis
+        //save user information in redis
         redisCache.setCacheObject("LoginUser:id:"+userId,loginUser);
         //把token和userinfo封装 返回
         //把User转换成UserInfoVo

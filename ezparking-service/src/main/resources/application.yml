@@ -1,8 +1,10 @@
+server:
+  port: 8083
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/user?characterEncoding=utf-8&serverTimezone=UTC
-    username: root23333
-    password: 114514
+    username: root
+    password: 111
     driver-class-name: com.mysql.cj.jdbc.Driver
 mybatis-plus:
   configuration:
