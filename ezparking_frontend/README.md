@@ -1,6 +1,6 @@
-# EZparking forntend technology demo
+# EZparking Webadmin forntend
 
-The purpose of this project is to verify whether our ideas are technically feasible, and the research is also devoted to identifying potential rewards and uncovering current shortcomings and risks.
+The purpose of this application is to help the parking lot administrator to better manage the parking lot waypoint system.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
