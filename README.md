@@ -30,6 +30,9 @@ Driving is one of the preferred means of transportation for modern people, and v
 ## How to use
 [Ezparking webadmin run locally](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/ezparking_frontend/README.md)
 
+## Milestone based project management
+![milestone](https://user-images.githubusercontent.com/6381488/205513873-ba5cd052-c25d-490a-8e16-d6d20395b0af.PNG)
+
 ## Roadmap
 [Project Roadmap](https://cultured-attraction-29e.notion.site/09f98feff5954c5eae4582e951a5a931?v=146a5f3935934354ac3b003aadd3a395)
 ![roadmap](https://user-images.githubusercontent.com/6381488/205512707-b87c0dc8-df66-4be7-a8cd-6d0cd0d8cd1c.PNG)
