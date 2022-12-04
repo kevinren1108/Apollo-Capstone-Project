@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+#google-map-1 {
+  max-height: 296px;
+}
