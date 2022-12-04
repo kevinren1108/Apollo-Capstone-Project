@@ -9,8 +9,8 @@ Open [https://developers.google.com/maps/documentation/javascript/get-api-key](h
 Then create a .env file in this folder, inside the .env file, name your API Key as REACT_APP_API_KEY
 
 For example 
-`REACT_APP_API_KEY = AIzaSyD6lqqwe123312hgjhjz8lmWLpwNE`
-W
+`REACT_APP_API_KEY = AIzaSyD6lqqwe123312hgjhjz8lmWLpwNEW`
+
 ## Available Scripts
 
 In the project directory, you can run:
