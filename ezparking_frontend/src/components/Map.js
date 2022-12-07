@@ -25,10 +25,18 @@ function Map() {
   });
   const [map, setMap] = useState(null);
   let [isOpen, setIsOpen] = useState(false);
+  let [msgIsOpen, setMsgIsOpen] = useState(false)
+  let [pointValue, setPointValue] = useState("select")
   const [curMarkerPosition, setCurMarkerPosition] = useState({
     lat: 50.417884,
     lng: -104.588749,
+    type:'waypoint'
   });
+  let [clickMarkerPosition,setClickMarkerPosition] = useState({
+    lat: 50.417884,
+    lng: -104.588749,
+  })
+  let [markerMsg,setMarkerMsg] = useState([])   
   const onLoad = React.useCallback(function callback(map) {
     // This is just an example of getting and using the map instance!!! don't just blindly copy!
     // const bounds = new window.google.maps.LatLngBounds(center);
@@ -55,55 +63,72 @@ function Map() {
   const dispatch = useDispatch();
 
   const onMarkerClick = (e) => {
-    const lat = e.latLng.lat();
-    const lng = e.latLng.lng();
-    let position = {
-      lat: Number(lat),
-      lng: Number(lng),
-    };
-    console.log('Kevin-Debug-Map.js-36: ', position, e);
-    console.log(infoWin.current.state);
-    // infoWin.current.state.infoWindow.setPosition(position);
-    infoWin.current.open(infoWin.current.state.infoWindow, e);
-    setCurMarkerPosition(position);
-  };
+    console.log(e)
+    setMsgIsOpen(true)
+    console.log(mapMarkerList)
+    console.log(markerMsg)
+    setClickMarkerPosition({
+      lat: mapMarkerList.clickLog[e][0],
+      lng: mapMarkerList.clickLog[e][1],
+      type:markerMsg[e].type
+    })
 
-  const addMarkerCall = (marker) => {
+  };
+   const addMarkerCall = (marker) => {
     const lat = marker.position.lat();
     const lng = marker.position.lng();
     const position = {
       lat,
       lng,
     };
-    console.log(position);
     dispatch(mapClickAdd(position));
     setCurMarkerPosition(position);
+    setPointValue(event.target.value)
     setIsOpen(true)
-    infoWin.current.open(infoWin.current.state.infoWindow);
-    console.log(mapMarkerList);
   };
-
-  const divStyle = {
-    background: `white`,
-    border: `1px solid #ccc`,
-    padding: 15,
-  };
+  const onChangePoint = (event) => {
+    setPointValue(event.target.value)
+  }
+  const save = () => {
+    let label = ""
+    for(let i in selectOption) {
+      if(selectOption[i].value == pointValue) {
+        label = selectOption[i].label
+      }
+    }
+    setIsOpen(false)
+    setMarkerMsg([...markerMsg,{
+      type:label
+    }])
+  }
+  const saveBtnStyle = {
+    border: "1px solid #ccc",
+    backgroundColor: "rgb(161,188,242)",
+    padding: "5px 10px",
+    color: "#fff",
+    borderRadius: "5px",
+    marginLeft: "10px"
+  }
 
   const changeCloseClick = (e) => {
-    console.log('close dialog');
+    // console.log('close dialog');
+    setIsOpen(false)
   };
   const selectOption = [
     {
-      value:"",
-      label:"Please Choose waypoint type"
+      id: 1,
+      value: "select",
+      label: "Please Choose waypoint type"
     },
     {
-      value:"path",
-      label:"Waypoint"
+      id: 2,
+      value: "path",
+      label: "Waypoint"
     },
     {
-      value:"end",
-      label:"Destination"
+      id: 3,
+      value: "end",
+      label: "Destination"
     }
   ]
 
@@ -125,13 +150,6 @@ function Map() {
       mapContainerClassName="h-full"
       onLoad={onLoad}
     >
-      {/* <Marker
-        onLoad={(marker) => {
-          console.log('marker: ', marker);
-        }}
-        position={center}
-        onClick={onMarkerClick}
-      ></Marker> */}
       <DrawingManager
         drawingMode={editTool}
         options={{
@@ -148,6 +166,7 @@ function Map() {
             editable: true,
             draggable: true,
             zIndex: 1,
+
           },
           markerOptions: {
             icon: '',
@@ -159,35 +178,55 @@ function Map() {
       {/* new marker  */}
       {mapMarkerList.clickLog.map((marker, index) => {
         const position = { lat: Number(marker[0]), lng: Number(marker[1] * 1) };
+        let count = 2
         return (
           <Marker
             onLoad={(marker) => {
               console.log('marker: ', marker);
             }}
+            zIndex={9999999999999}
             key={index}
             position={position}
-            onClick={onMarkerClick}
+            onClick={() => { onMarkerClick(index) }}
+            cursor={'pointer'}
           ></Marker>
         );
       })}
       {/* message dialog */}
       {
-        isOpen?(<InfoWindow
+        isOpen ? (<InfoWindow
           ref={infoWin}
           onLoad={onLoad}
           position={curMarkerPosition}
           options={{ ariaLabel: '' }}
           onCloseClick={changeCloseClick}
         >
-          <div style={divStyle}>
-            <select style={{outline:'none'}}>
+          <div>
+            <select style={{ outline: 'none' }} value={pointValue} onChange={onChangePoint}>
               {
-                selectOption.map(item => <option value={item.value}>{item.label}</option>)
+                selectOption.map(item => <option key={item.id} value={item.value}>{item.label}</option>)
               }
             </select>
+            <button style={saveBtnStyle} onClick={save}>Save</button>
           </div>
-        </InfoWindow>):null
+        </InfoWindow>) : null
       }
+      {/* check waypoint type */}
+      {
+        msgIsOpen ? (<InfoWindow
+          onLoad={onLoad}
+          position={clickMarkerPosition}
+          options={{ ariaLabel: '' }}
+          onCloseClick={() => {setMsgIsOpen(false)}}
+        >
+          <div style={{}}>
+            <p>lat: {clickMarkerPosition.lat}</p>
+            <p>lng: {clickMarkerPosition.lng}</p>
+            <p>Type：{clickMarkerPosition.type}</p>
+          </div>
+        </InfoWindow>) : null
+      }
+
     </GoogleMap>
   );
 }
