@@ -1,6 +1,6 @@
 const authProvider = {
     login: ({ username, password }) =>  {
-        const request = new Request('https://34.207.166.66:8083/login', {
+        const request = new Request('https://ezparking114514.com:9195/login', {
             method: 'POST',
             body: JSON.stringify({"name":username, "password":password }),
             headers: new Headers({'Content-Type': 'application/json' }),
@@ -24,6 +24,7 @@ const authProvider = {
         return Promise.resolve();
     },
     checkAuth: () => {
+        // return Promise.resolve()
         return localStorage.getItem('auth') ? Promise.resolve() : Promise.reject()
     },
     getPermissions: () => {

@@ -1,6 +1,6 @@
-# EZparking Webadmin forntend
+# EZparking forntend technology demo
 
-The purpose of this application is to help the parking lot administrator to better manage the parking lot waypoint system.
+The purpose of this project is to verify whether our ideas are technically feasible, and the research is also devoted to identifying potential rewards and uncovering current shortcomings and risks.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -9,8 +9,8 @@ Open [https://developers.google.com/maps/documentation/javascript/get-api-key](h
 Then create a .env file in this folder, inside the .env file, name your API Key as REACT_APP_API_KEY
 
 For example 
-`REACT_APP_API_KEY = hj1423g4hjghj12g34hg1234`
-
+`REACT_APP_API_KEY = AIzaSyD6lqqwe123312hgjhjz8lmWLpwNE`
+W
 ## Available Scripts
 
 In the project directory, you can run:
