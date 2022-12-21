@@ -1,8 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit'
-import clickSlice from '../store/clickSlice'
+import mapClickSlice from '../store/mapClickSlice'
+import editMeunClickSlice from '../store/editMeunClickSlice'
 
 export default configureStore({
   reducer: {
-    clicked : clickSlice
+    mapClicked : mapClickSlice,
+    editMenuSelected: editMeunClickSlice
   }
 })
