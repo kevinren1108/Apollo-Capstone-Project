@@ -13,8 +13,6 @@ function MyMenu(){
             }}
         >
             <Menu.Item sx={{color: 'black'}} to="/" primaryText="Map" leftIcon={<LabelIcon />} />
-            <Menu.Item sx={{color: 'black'}} to="/Overview" primaryText="Overview" leftIcon={<LabelIcon />} />
-            <Menu.Item sx={{color: 'black'}} to="/Setting" primaryText="Setting" leftIcon={<LabelIcon />} />
         </Menu>
     )
 }

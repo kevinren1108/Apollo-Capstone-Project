@@ -30,11 +30,11 @@ function Dashboard(){
                         <TopSection itemName={"In Use"} itemValue={"60"}/>
                     </div>
 
-                    <div className="row-start-3 row-end-6 col-start-1 col-end-5 bg-[#ffffff] rounded-md drop-shadow p-5">
+                    <div className="row-start-3 row-end-6 col-start-1 col-end-3 bg-[#ffffff] rounded-md drop-shadow p-5">
                         <CoordinateForm />
                     </div>
                     
-                    <div className="row-start-3 row-end-6 col-start-5 col-end-13 bg-[#ffffff] rounded-md drop-shadow p-5">
+                    <div className="row-start-3 row-end-6 col-start-3 col-end-13 bg-[#ffffff] rounded-md drop-shadow p-5">
                         <Map />
                     </div>          
                     

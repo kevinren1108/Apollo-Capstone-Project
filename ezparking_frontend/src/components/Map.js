@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   GoogleMap,
   useJsApiLoader,
@@ -11,18 +11,22 @@ import {
   Polyline,
 } from '@react-google-maps/api';
 import { useSelector, useDispatch } from 'react-redux';
-import { mapClickAdd } from '../store/mapClickSlice';
+import { mapClickAdd, markerClick, generateData } from '../store/mapClickSlice';
 import "./map.css"
+import Graph from '../structure/graph';
 
 const libraries = ['drawing'];
 const MAP_API = process.env.REACT_APP_API_KEY;
 const center = { lat: 50.417884, lng: -104.588749 };
+const graph = new Graph()
 
 function Map() {
+
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: MAP_API,
     libraries: libraries,
   });
+
   const [map, setMap] = useState(null);
   let [isOpen, setIsOpen] = useState(false);
   let [msgIsOpen, setMsgIsOpen] = useState(false)
@@ -30,13 +34,47 @@ function Map() {
   const [curMarkerPosition, setCurMarkerPosition] = useState({
     lat: 50.417884,
     lng: -104.588749,
-    type:'waypoint'
+    type: 'waypoint'
   });
-  let [clickMarkerPosition,setClickMarkerPosition] = useState({
+  let [clickMarkerPosition, setClickMarkerPosition] = useState({
     lat: 50.417884,
     lng: -104.588749,
   })
-  let [markerMsg,setMarkerMsg] = useState([])   
+  let [markerMsg, setMarkerMsg] = useState([])   
+  let [currentpolyLine, setCurrentPolyLine] = useState([])
+  let [totalpolyLine, setTotalPolyLine] = useState([])
+  let [polyMarker, setPolyMarker] = useState([])
+  let [animateMarkerId,setAnimateMarkerId] = useState([])
+  useEffect(() => {
+    // console.log('polyMarker', polyMarker)
+    // console.log("currentpolyLine", currentpolyLine)
+    // console.log("totalPolyLine", totalpolyLine)
+    // console.log(animateMarkerId)
+    if (polyMarker.length > 1) {
+      graph.addEdge(polyMarker[polyMarker.length - 2], polyMarker[polyMarker.length - 1]);
+      
+    }else {
+      
+    }
+    let postData = JSON.parse(JSON.stringify(graph.vertiecs))
+    postData.forEach(item => {
+      for (let k in item) {
+        for (let v in graph.edgeList) {
+          if (k == v) {
+            item[k]['neighbor'] = graph.edgeList[v]
+          }
+        }
+      }
+    });
+    // console.log(postData)
+    dispatch(generateData({
+      data: postData,
+      name: 'tt',
+      age: 18
+    }))
+  }, [polyMarker]);
+
+
   const onLoad = React.useCallback(function callback(map) {
     // This is just an example of getting and using the map instance!!! don't just blindly copy!
     // const bounds = new window.google.maps.LatLngBounds(center);
@@ -62,19 +100,64 @@ function Map() {
 
   const dispatch = useDispatch();
 
-  const onMarkerClick = (e) => {
-    console.log(e)
+
+  const onMarkerClick = (e, index) => {
+    // console.log(e,index)
+
+    let lat = e.latLng.lat()
+    let lng = e.latLng.lng()
+
     setMsgIsOpen(true)
-    console.log(mapMarkerList)
-    console.log(markerMsg)
+    // console.log(mapMarkerList)
+    // console.log(markerMsg)
+
     setClickMarkerPosition({
-      lat: mapMarkerList.clickLog[e][0],
-      lng: mapMarkerList.clickLog[e][1],
-      type:markerMsg[e].type
+      lat: lat + 0.0004,
+      lng: lng,
+      type: markerMsg[index].type
     })
+ 
+    dispatch(markerClick({
+      lat: lat,
+      lng: lng,
+      id: index
+    }))
+
+    // console.log('ssssssss')
+    // console.log(polyMarker,polyMarker.length)
+    if(polyMarker.length == 0) {
+      setAnimateMarkerId([...animateMarkerId,index])
+    }
+
+    graph.addVerTex(index, {
+      lat: lat,
+      lng: lng,
+      type: markerMsg[index].type
+    });
+
+    setPolyMarker([...polyMarker, index])
+
+
+    setCurrentPolyLine([...currentpolyLine, {
+      lat: lat,
+      lng: lng,
+    }])
+
 
   };
-   const addMarkerCall = (marker) => {
+
+  const onRightClick = (e, index) => {
+    // console.log("right-click")
+
+    onMarkerClick(e, index)
+    setPolyMarker([])
+    setCurrentPolyLine([])
+    setTotalPolyLine([...totalpolyLine, currentpolyLine])
+
+
+  }
+
+  const addMarkerCall = (marker) => {
     const lat = marker.position.lat();
     const lng = marker.position.lng();
     const position = {
@@ -85,20 +168,35 @@ function Map() {
     setCurMarkerPosition(position);
     setPointValue(event.target.value)
     setIsOpen(true)
+    // console.log(mapMarkerList.clickLog)
   };
   const onChangePoint = (event) => {
     setPointValue(event.target.value)
   }
   const save = () => {
     let label = ""
-    for(let i in selectOption) {
-      if(selectOption[i].value == pointValue) {
+    for (let i in selectOption) {
+      if (selectOption[i].value == pointValue) {
         label = selectOption[i].label
       }
     }
+    if(label == "") {
+      alert("Please Choose Waypoint Type")
+      return
+    }
+    if(label == "Parking lot") {
+      let parkingLotNumber = prompt("Please Entry Avaiable Spots")
+      label += `(Avaiable Spots: ${parkingLotNumber})`
+      let parkingLotName = prompt("Please Entry Parking LotName")
+      label += `(Parkinglot Name: ${parkingLotName})`
+    }
+    if(label == "Destination") {
+      let pestinationName = prompt("Please Entry Destination Name")
+      label += `(Destination Name: ${pestinationName})`
+    }
     setIsOpen(false)
-    setMarkerMsg([...markerMsg,{
-      type:label
+    setMarkerMsg([...markerMsg, {
+      type: label
     }])
   }
   const saveBtnStyle = {
@@ -109,29 +207,45 @@ function Map() {
     borderRadius: "5px",
     marginLeft: "10px"
   }
-
   const changeCloseClick = (e) => {
-    // console.log('close dialog');
+
     setIsOpen(false)
   };
   const selectOption = [
     {
       id: 1,
       value: "select",
-      label: "Please Choose waypoint type"
+      label: "Please Choose Waypoint Type"
     },
     {
       id: 2,
-      value: "path",
-      label: "Waypoint"
+      value: "Way point",
+      label: "Way point"
     },
     {
       id: 3,
-      value: "end",
+      value: "Parking lot",
+      label: "Parking lot"
+    },
+    {
+      id: 4,
+      value: "Destination",
       label: "Destination"
     }
   ]
-
+  const polyLineOptions = {
+    strokeColor: 'rgb(103,190,135)',
+    strokeOpacity: 0.8,
+    strokeWeight: 2,
+    fillColor: 'rgb(103,190,135)',
+    fillOpacity: 0.35,
+    clickable: false,
+    draggable: false,
+    editable: false,
+    visible: true,
+    radius: 30000,
+    zIndex: 1
+  };
   if (!isLoaded) {
     return (
       <div className="p-5 m-5 bg-red-400 rounded-md drop-shadow-sm">
@@ -143,7 +257,7 @@ function Map() {
   return (
     <GoogleMap
       id="google-map-1"
-      mapContainerStyle={{ height: '100%'}}
+      mapContainerStyle={{ height: '100%' }}
       zoom={17.2}
       center={center}
       options={options}
@@ -178,16 +292,19 @@ function Map() {
       {/* new marker  */}
       {mapMarkerList.clickLog.map((marker, index) => {
         const position = { lat: Number(marker[0]), lng: Number(marker[1] * 1) };
-        let count = 2
         return (
           <Marker
             onLoad={(marker) => {
-              console.log('marker: ', marker);
+              // console.log('marker: ', marker);
             }}
+            // onMouseDown={}
+            animation={ (animateMarkerId.indexOf(index) != -1)  && window.google.maps.Animation.BOUNCE}
             zIndex={9999999999999}
+            label={index}
             key={index}
             position={position}
-            onClick={() => { onMarkerClick(index) }}
+            onClick={(e) => { onMarkerClick(e, index) }}
+            onRightClick={(e) => { onRightClick(e, index) }}
             cursor={'pointer'}
           ></Marker>
         );
@@ -217,14 +334,33 @@ function Map() {
           onLoad={onLoad}
           position={clickMarkerPosition}
           options={{ ariaLabel: '' }}
-          onCloseClick={() => {setMsgIsOpen(false)}}
+          onCloseClick={() => { setMsgIsOpen(false) }}
         >
           <div style={{}}>
-            <p>lat: {clickMarkerPosition.lat}</p>
-            <p>lng: {clickMarkerPosition.lng}</p>
-            <p>Type：{clickMarkerPosition.type}</p>
+            <p>Lat: {clickMarkerPosition.lat}</p>
+            <p>Lng: {clickMarkerPosition.lng}</p>
+            <p>Info: {clickMarkerPosition.type}</p>
           </div>
         </InfoWindow>) : null
+      }
+      {/* prev edge */}
+      {
+        totalpolyLine.map((polyline, index) => {
+          return (
+            <Polyline
+              key={index}
+              path={polyline}
+              options={polyLineOptions}
+            />
+          )
+        })
+      }
+      {/* new edge */}
+      {
+        <Polyline
+          path={currentpolyLine}
+          options={polyLineOptions}
+        />
       }
 
     </GoogleMap>

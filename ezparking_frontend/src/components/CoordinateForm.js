@@ -36,40 +36,39 @@ function CoordinateForm() {
     waypointBtnStyle =
       'bg-white drop-shadow rounded-lg text-black-700 px-1 py-10  my-5 text-center';
   }
+  const sendReqStyle = {
+    border:'1px solid #ccc',
+    padding:'5px 10px',
+    borderRadius:'5px',
+    margin:'30px auto',
+    display:'block'
+  }
+  let sendReq = () => {
+    console.log(JSON.stringify(state.sendData))
 
+    // fetch('https://127.0.0.1/',{
+    //   method:"post",
+    //   headers:{
+    //     'Content-Type':'application/json',
+    //     "Authorization": "Bearer token"
+    //   },
+    //   body: JSON.stringify(state.sendData)
+      
+    // })
+    // .then(res => res.json()).then(data=>{
+    // console.log(data);
+    // }).catch((err)=>{
+    // console.log(err);
+    // })
+  }
   return (
     <div>
-      <h1>{}</h1>
-      <div onClick={handleEditParkingLotClick} className={`${parkLotBtnStyle}`}>
-        Edit Parking Lots
-      </div>
+      
       <div onClick={handleEditWaypointClick} className={`${waypointBtnStyle}`}>
         Edit Waypoints
       </div>
-      <table className="w-full mt-4 border border-collapse table-fixed drop-shadow">
-        <thead>
-          <tr>
-            <th className="w-1/3 border ">ID</th>
-            <th className="w-1/3 border ">Lat</th>
-            <th className="w-1/3 border ">Lng</th>
-          </tr>
-        </thead>
-        <tbody>
-          {state.clickLog.map((k, v) => (
-            <tr key={v}>
-              <td key={v + 1} className="border ">
-                {v}
-              </td>
-              <td key={v + 2} className="border ">
-                {k[0].toFixed(3)}
-              </td>
-              <td key={v + 3} className="border ">
-                {k[1].toFixed(3)}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      
+      <button className='sendReq' style={sendReqStyle} onClick={sendReq}>Send Graph</button>
     </div>
   );
 }

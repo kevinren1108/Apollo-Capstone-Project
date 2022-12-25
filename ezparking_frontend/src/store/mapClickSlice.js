@@ -2,7 +2,10 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   clickLog: [],
-  // dialogOpen:
+  currentLog:[],
+  clickId:'',
+  sendData:{},
+  isNewPath:true
 };
 
 const mapClickSlice = createSlice({
@@ -11,11 +14,21 @@ const mapClickSlice = createSlice({
   reducers: {
     mapClickAdd(state, action) {
       const { lng, lat } = action.payload;
-
       state.clickLog = [...state.clickLog, [lat, lng]];
+      state.clickId = state.clickLog.length - 1
+      state.currentLog = [lat,lng]
     },
+    markerClick(state,action) {
+      const { lat, lng,id } = action.payload;
+      state.currentLog = [lat,lng]
+      state.clickId = id
+    },
+    generateData(state,action) {
+      const { data } = action.payload
+      state.sendData = JSON.parse(JSON.stringify(data))
+    }
   },
 });
 
-export const { mapClickAdd } = mapClickSlice.actions;
+export const { mapClickAdd,markerClick,generateData } = mapClickSlice.actions;
 export default mapClickSlice.reducer;
