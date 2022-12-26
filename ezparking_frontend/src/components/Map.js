@@ -100,8 +100,18 @@ function Map() {
 
   const dispatch = useDispatch();
 
-
   const onMarkerClick = (e, index) => {
+    let lat = e.latLng.lat()
+    let lng = e.latLng.lng()
+    setMsgIsOpen(true)
+    setClickMarkerPosition({
+      lat: lat + 0.0004,
+      lng: lng,
+      type: markerMsg[index].type
+    })
+  }
+
+  const onMarkerDbClick = (e, index) => {
     // console.log(e,index)
 
     let lat = e.latLng.lat()
@@ -149,7 +159,7 @@ function Map() {
   const onRightClick = (e, index) => {
     // console.log("right-click")
 
-    onMarkerClick(e, index)
+    onMarkerDbClick(e, index)
     setPolyMarker([])
     setCurrentPolyLine([])
     setTotalPolyLine([...totalpolyLine, currentpolyLine])
@@ -256,7 +266,6 @@ function Map() {
 
   return (
     <GoogleMap
-      id="google-map-1"
       mapContainerStyle={{ height: '100%' }}
       zoom={17.2}
       center={center}
@@ -304,6 +313,7 @@ function Map() {
             key={index}
             position={position}
             onClick={(e) => { onMarkerClick(e, index) }}
+            onDblClick = {(e) => {onMarkerDbClick(e, index)}}
             onRightClick={(e) => { onRightClick(e, index) }}
             cursor={'pointer'}
           ></Marker>
