@@ -44,7 +44,7 @@ function Map() {
   let [currentpolyLine, setCurrentPolyLine] = useState([])
   let [totalpolyLine, setTotalPolyLine] = useState([])
   let [polyMarker, setPolyMarker] = useState([])
-  let [animateMarkerId,setAnimateMarkerId] = useState([])
+  let [animateMarkerId,setAnimateMarkerId] = useState(-1)
   useEffect(() => {
     // console.log('polyMarker', polyMarker)
     // console.log("currentpolyLine", currentpolyLine)
@@ -133,12 +133,13 @@ function Map() {
       id: index
     }))
 
+
     // console.log('ssssssss')
     // console.log(polyMarker,polyMarker.length)
-    if(polyMarker.length == 0) {
-      setAnimateMarkerId([...animateMarkerId,index])
-    }
-
+    // if(polyMarker.length == 0) {
+    //   setAnimateMarkerId([...animateMarkerId,index])
+    // }
+    setAnimateMarkerId(index)
     graph.addVerTex(index, {
       lat: lat,
       lng: lng,
@@ -246,7 +247,7 @@ function Map() {
   const polyLineOptions = {
     strokeColor: 'rgb(103,190,135)',
     strokeOpacity: 0.8,
-    strokeWeight: 2,
+    strokeWeight: 6,
     fillColor: 'rgb(103,190,135)',
     fillOpacity: 0.35,
     clickable: false,
@@ -307,7 +308,7 @@ function Map() {
               // console.log('marker: ', marker);
             }}
             // onMouseDown={}
-            animation={ (animateMarkerId.indexOf(index) != -1)  && window.google.maps.Animation.BOUNCE}
+            animation={ (animateMarkerId == index)  && window.google.maps.Animation.BOUNCE}
             zIndex={9999999999999}
             label={index}
             key={index}

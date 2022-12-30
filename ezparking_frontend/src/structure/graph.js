@@ -28,6 +28,8 @@ class Graph {
         
         this.edgeList[a].push(b);
         this.edgeList[b].push(a);
+        this.edgeList[a] = Array.from(new Set(this.edgeList[a]))
+        this.edgeList[b] = Array.from(new Set(this.edgeList[b]))
     }
     
     isAddVerTex(v) {
