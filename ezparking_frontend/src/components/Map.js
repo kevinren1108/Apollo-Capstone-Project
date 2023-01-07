@@ -2,16 +2,14 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   GoogleMap,
   useJsApiLoader,
-  useLoadScript,
   DrawingManager,
   Marker,
-  Rectangle,
-  Polygon,
   InfoWindow,
   Polyline,
 } from '@react-google-maps/api';
 import { useSelector, useDispatch } from 'react-redux';
 import { mapClickAdd, markerClick, generateData } from '../store/mapClickSlice';
+import { updateVehicleCount, updateParkingLotsCount, updateTotalParkingSpotCount, updateInUseCount } from '../store/parkingStatusSlice';
 import "./map.css"
 import Graph from '../structure/graph';
 
@@ -21,7 +19,7 @@ const center = { lat: 50.417884, lng: -104.588749 };
 const graph = new Graph()
 
 function Map() {
-
+  const dispatch = useDispatch();
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: MAP_API,
     libraries: libraries,
@@ -40,21 +38,23 @@ function Map() {
     lat: 50.417884,
     lng: -104.588749,
   })
-  let [markerMsg, setMarkerMsg] = useState([])   
+  let [markerMsg, setMarkerMsg] = useState([])
   let [currentpolyLine, setCurrentPolyLine] = useState([])
   let [totalpolyLine, setTotalPolyLine] = useState([])
   let [polyMarker, setPolyMarker] = useState([])
-  let [animateMarkerId,setAnimateMarkerId] = useState(-1)
+  let [animateMarkerId, setAnimateMarkerId] = useState(-1)
+
   useEffect(() => {
+
     // console.log('polyMarker', polyMarker)
     // console.log("currentpolyLine", currentpolyLine)
     // console.log("totalPolyLine", totalpolyLine)
     // console.log(animateMarkerId)
     if (polyMarker.length > 1) {
       graph.addEdge(polyMarker[polyMarker.length - 2], polyMarker[polyMarker.length - 1]);
-      
-    }else {
-      
+
+    } else {
+
     }
     let postData = JSON.parse(JSON.stringify(graph.vertiecs))
     postData.forEach(item => {
@@ -66,13 +66,85 @@ function Map() {
         }
       }
     });
-    // console.log(postData)
+    console.log("postdata", postData)
     dispatch(generateData({
-      data: postData,
-      name: 'tt',
-      age: 18
+      data: postData
     }))
+    // console.log(graph)
   }, [polyMarker]);
+
+  
+  useEffect(() => {
+    
+    fetch('https://ezparking114514.com:9195/loadWP').then(response => {
+      return response.json()
+    }).then(res => {
+      
+      res.data.sort(function (a, b) {
+        return Number(a.name) - Number(b.name)
+      })
+      console.log("fetching")
+      console.log(res.data)
+      
+      let markerMsgArr = []
+      for (let i = 0; i < res.data.length; i++) {
+        const position = {
+          lat: res.data[i].lat,
+          lng: res.data[i].lng
+        }
+        dispatch(mapClickAdd(position));
+        markerMsgArr.push({
+          type: res.data[i].type
+        })
+      }
+      
+      setMarkerMsg(markerMsgArr)
+      
+      for (let i = 0; i < res.data.length; i++) {
+        graph.addVerTex(Number(res.data[i].name), {
+          lat: res.data[i].lat,
+          lng: res.data[i].lng,
+          type: res.data[i].type
+        });
+      }
+      let lineArr = []
+      
+      function getVertexLat(name) {
+        for(let i = 0; i < res.data.length;i++) {
+          if(name == Number(res.data[i].name)) {
+            return {
+              lat:res.data[i].lat,
+              lng:res.data[i].lng
+            }
+          }
+        }
+      }
+      for (let i = 0; i < res.data.length; i++) {
+        for (let j = 0; j < JSON.parse(res.data[i].neighbor).length; j++) {
+          
+          graph.addEdge(Number(res.data[i].name), JSON.parse(res.data[i]['neighbor'])[j]);
+          const twoPoint = getVertexLat(JSON.parse(res.data[i]['neighbor'])[j])
+          lineArr.push([
+            {
+              lat:res.data[i].lat,
+              lng:res.data[i].lng
+            },
+            {
+              lat:twoPoint.lat,
+              lng:twoPoint.lng
+            }
+          ])
+        }
+      }
+      console.log("graph",graph)
+      console.log(lineArr)
+      setTotalPolyLine(lineArr)
+
+
+    }).catch(err => {
+
+    })
+  }, [])
 
 
   const onLoad = React.useCallback(function callback(map) {
@@ -84,6 +156,7 @@ function Map() {
 
   const editMenuState = useSelector((state) => state.editMenuSelected);
   const mapMarkerList = useSelector((state) => state.mapClicked);
+
   const infoWin = useRef(null);
   let editTool = 'null';
   if (editMenuState.editSelected == 2) {
@@ -98,9 +171,11 @@ function Map() {
     mapId: '3c735604953ece6',
   }));
 
-  const dispatch = useDispatch();
+
 
   const onMarkerClick = (e, index) => {
+    // console.log(mapMarkerList.clickLog)
+    // console.log(markerMsg)
     let lat = e.latLng.lat()
     let lng = e.latLng.lng()
     setMsgIsOpen(true)
@@ -126,13 +201,12 @@ function Map() {
       lng: lng,
       type: markerMsg[index].type
     })
- 
+
     dispatch(markerClick({
       lat: lat,
       lng: lng,
       id: index
     }))
-
 
     // console.log('ssssssss')
     // console.log(polyMarker,polyMarker.length)
@@ -145,9 +219,7 @@ function Map() {
       lng: lng,
       type: markerMsg[index].type
     });
-
     setPolyMarker([...polyMarker, index])
-
 
     setCurrentPolyLine([...currentpolyLine, {
       lat: lat,
@@ -157,14 +229,14 @@ function Map() {
 
   };
 
-  const onRightClick = (e, index) => {
+  const onRightClick = (e) => {
     // console.log("right-click")
-
-    onMarkerDbClick(e, index)
     setPolyMarker([])
     setCurrentPolyLine([])
     setTotalPolyLine([...totalpolyLine, currentpolyLine])
 
+    // reset animation
+    setAnimateMarkerId(-1)
 
   }
 
@@ -178,6 +250,7 @@ function Map() {
     dispatch(mapClickAdd(position));
     setCurMarkerPosition(position);
     setPointValue(event.target.value)
+    console.log("event.target.value", event.target.value)
     setIsOpen(true)
     // console.log(mapMarkerList.clickLog)
   };
@@ -191,17 +264,21 @@ function Map() {
         label = selectOption[i].label
       }
     }
-    if(label == "") {
+    if (label == "") {
       alert("Please Choose Waypoint Type")
       return
     }
-    if(label == "Parking lot") {
-      let parkingLotNumber = prompt("Please Entry Avaiable Spots")
-      label += `(Avaiable Spots: ${parkingLotNumber})`
+
+    if (label == "Parking lot") {
+      let parkingLotSpots = prompt("Please Entry Avaiable Spots")
+      label += `(Avaiable Spots: ${parkingLotSpots})`
+
+      dispatch(updateParkingLotsCount(1))
+      dispatch(updateTotalParkingSpotCount(parseInt(parkingLotSpots)))
       let parkingLotName = prompt("Please Entry Parking LotName")
       label += `(Parkinglot Name: ${parkingLotName})`
     }
-    if(label == "Destination") {
+    if (label == "Destination") {
       let pestinationName = prompt("Please Entry Destination Name")
       label += `(Destination Name: ${pestinationName})`
     }
@@ -273,6 +350,7 @@ function Map() {
       options={options}
       mapContainerClassName="h-full"
       onLoad={onLoad}
+      onRightClick={(e) => { onRightClick(e) }}
     >
       <DrawingManager
         drawingMode={editTool}
@@ -304,18 +382,31 @@ function Map() {
         const position = { lat: Number(marker[0]), lng: Number(marker[1] * 1) };
         return (
           <Marker
-            onLoad={(marker) => {
-              // console.log('marker: ', marker);
-            }}
+            // onLoad={marker => {
+            //     const customIcon = (opts) => Object.assign({
+            //       path: 'M12.75 0l-2.25 2.25 2.25 2.25-5.25 6h-5.25l4.125 4.125-6.375 8.452v0.923h0.923l8.452-6.375 4.125 4.125v-5.25l6-5.25 2.25 2.25 2.25-2.25-11.25-11.25zM10.5 12.75l-1.5-1.5 5.25-5.25 1.5 1.5-5.25 5.25z',
+            //       fillColor: '#34495e',
+            //       fillOpacity: 1,
+            //       strokeColor: '#000',
+            //       strokeWeight: 1,
+            //       scale: 1,
+            //     }, opts);
+
+            //     marker.setIcon(customIcon({
+            //       fillColor: 'green',
+            //       strokeColor: 'white'
+            //     }));
+
+            //   }}
             // onMouseDown={}
-            animation={ (animateMarkerId == index)  && window.google.maps.Animation.BOUNCE}
+            animation={(animateMarkerId == index) && window.google.maps.Animation.BOUNCE}
             zIndex={9999999999999}
-            label={index}
+            // label={index}
             key={index}
             position={position}
             onClick={(e) => { onMarkerClick(e, index) }}
-            onDblClick = {(e) => {onMarkerDbClick(e, index)}}
-            onRightClick={(e) => { onRightClick(e, index) }}
+            onDblClick={(e) => { onMarkerDbClick(e, index) }}
+
             cursor={'pointer'}
           ></Marker>
         );
@@ -348,7 +439,7 @@ function Map() {
           onCloseClick={() => { setMsgIsOpen(false) }}
         >
           <div style={{}}>
-            <p>Lat: {clickMarkerPosition.lat}</p>
+            <p>Lat: {clickMarkerPosition.lat - 0.0004}</p>
             <p>Lng: {clickMarkerPosition.lng}</p>
             <p>Info: {clickMarkerPosition.type}</p>
           </div>
