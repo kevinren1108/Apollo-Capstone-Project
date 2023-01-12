@@ -3,6 +3,7 @@ import numpy as np
 import tracker
 from detector import Detector
 import cv2
+import urllib.request
 
 if __name__ == '__main__':
 
@@ -121,6 +122,8 @@ if __name__ == '__main__':
                     if track_id in list_overlapping_yellow_polygon:
                         # 外出+1
                         up_count += 1
+                        #通过对后台发送request调整后台数据-1
+                        resp = urllib.request.urlopen('https://ezparking114514.com:9195/countDown')
 
                         print(f'类别: {label} | id: {track_id} | 上行撞线 | 上行撞线总数: {up_count} | 上行id列表: {list_overlapping_yellow_polygon}')
 
@@ -143,6 +146,9 @@ if __name__ == '__main__':
                     if track_id in list_overlapping_blue_polygon:
                         # 进入+1
                         down_count += 1
+                        #通过对后台发送request调整后台数据+1
+                        resp = urllib.request.urlopen('https://ezparking114514.com:9195/countUp')
+
 
                         print(f'类别: {label} | id: {track_id} | 下行撞线 | 下行撞线总数: {down_count} | 下行id列表: {list_overlapping_blue_polygon}')
 
