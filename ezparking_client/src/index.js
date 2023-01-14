@@ -6,13 +6,17 @@ import reportWebVitals from './test/reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import store from './store';
+import PageHeader from './components/header';
+import PageFooter from './components/footer';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>
-        <App />
+        <PageHeader />
+        <App/>
+        <PageFooter />
       </BrowserRouter>
     </Provider>
   </React.StrictMode>
