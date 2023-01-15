@@ -8,6 +8,10 @@ Driving is one of the preferred means of transportation for modern people, and v
 
 [Project vlog video #3](https://youtu.be/iK_OS3lrqLc) 
 
+## Report
+[Vehicle Counting System AI Report](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/ezparking_frontend/README.md)
+
+
 ## Documents
 [Business Case](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/documents/Planning/Business%20Case.pdf)
 

@@ -1,6 +1,6 @@
-# EZparking forntend technology demo
+# EZparking Backend Management System(EzParking Myadmin)
 
-The purpose of this project is to verify whether our ideas are technically feasible, and the research is also devoted to identifying potential rewards and uncovering current shortcomings and risks.
+This is the visual backend management system of the Ezparking system. aka Ezparking Myadmin. This system allows back-end administrators to add waypoint maps to help the system better plan optimal paths.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
