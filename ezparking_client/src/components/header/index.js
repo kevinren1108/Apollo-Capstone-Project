@@ -1,8 +1,11 @@
+import logo from '../../assert/logo.png';
+
 function PageHeader() {
     return ( 
     
-    <div>  
-        <div className=" grid grid-rows-1 bg-blue-500 text-white text-4xl py-4 text-center">
+    <div className='inline-flex mx-auto my-3'>  
+        <img className='h-10' src={logo} alt="Logo" />
+        <div className=" ml-5 text-4xl ">
             EzParking
         </div>
     </div> );

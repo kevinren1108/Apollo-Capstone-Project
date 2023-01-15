@@ -8,15 +8,19 @@ import { Provider } from 'react-redux';
 import store from './store';
 import PageHeader from './components/header';
 import PageFooter from './components/footer';
+import Announcement from './components/announcement';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>
-        <PageHeader />
-        <App/>
-        <PageFooter />
+        <div className="flex flex-col h-screen justify-between">
+          <PageHeader />
+          <Announcement />
+            <App/>
+          <PageFooter />
+        </div> 
       </BrowserRouter>
     </Provider>
   </React.StrictMode>
