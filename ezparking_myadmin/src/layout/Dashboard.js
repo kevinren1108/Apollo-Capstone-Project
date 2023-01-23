@@ -54,13 +54,13 @@ function Dashboard(){
                             </div>
                             <div className=' text-2xl text-gray-400 flex justify-evenly'>
                                 <p >
-                                    <FontAwesomeIcon icon={faComputerMouse} className=" text-red-200"/> Click to add Waypoint 
+                                    <FontAwesomeIcon icon={faComputerMouse} className=" text-red-200"/> Click to Add Waypoint 
                                 </p>
                                 <p>
                                     <FontAwesomeIcon icon={faArrowPointer} className="text-orange-400"/> Double Click to Connect Waypoint
                                 </p>
                                 <p>
-                                    <FontAwesomeIcon icon={faComputerMouse} className="text-red-600"/> Right Click to stop Connecting Waypoint 
+                                    <FontAwesomeIcon icon={faComputerMouse} className="text-red-600"/> Right Click to Stop Connecting Waypoint 
                                 </p>
                             </div>
                             
