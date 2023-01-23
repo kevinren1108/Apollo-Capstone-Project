@@ -1,5 +1,5 @@
 # EZparking Backend Management System(EzParking Myadmin)
-
+![image](https://user-images.githubusercontent.com/6381488/213950644-e2841459-2fb4-49e9-af44-65f49de5eac1.png)
 This is the visual backend management system of the Ezparking system. aka Ezparking Myadmin. This system allows back-end administrators to add waypoint maps to help the system better plan optimal paths.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
@@ -26,4 +26,5 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
 The page will reload when you make changes.\
 You may also see any lint errors in the console.
+
 
