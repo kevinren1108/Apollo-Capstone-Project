@@ -44,22 +44,26 @@ function CoordinateForm() {
     display:'block'
   }
   let sendReq = () => {
-    console.log(JSON.stringify(state.sendData))
-
-    // fetch('https://127.0.0.1/',{
-    //   method:"post",
-    //   headers:{
-    //     'Content-Type':'application/json',
-    //     "Authorization": "Bearer token"
-    //   },
-    //   body: JSON.stringify(state.sendData)
-      
-    // })
-    // .then(res => res.json()).then(data=>{
-    // console.log(data);
-    // }).catch((err)=>{
-    // console.log(err);
-    // })
+    if(JSON.stringify(state.sendData) != '{}'){
+      fetch('https://ezparking114514.com:9195/insertWP',{
+        method:"post",
+        headers:{
+          'Content-Type':'application/json',
+          "Authorization": "Bearer token"
+        },
+        body: JSON.stringify(state.sendData)
+        
+      })
+      .then(res => res.json()).then(data=>{
+        alert("Update Success")
+        location.reload()
+      }).catch((err)=>{
+      console.log(err);
+      })
+    }else{
+      alert("Nothing to update, Request canceled")
+    }
+    
   }
   return (
     <div>

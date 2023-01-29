@@ -26,9 +26,13 @@ const mapClickSlice = createSlice({
     generateData(state,action) {
       const { data } = action.payload
       state.sendData = JSON.parse(JSON.stringify(data))
+    },
+    waypointUpdate(state, action) {
+      const { lng, lat, index } = action.payload;
+      state.clickLog[index] = [lat, lng];
     }
   },
 });
 
-export const { mapClickAdd,markerClick,generateData } = mapClickSlice.actions;
+export const { mapClickAdd,markerClick,generateData, waypointUpdate } = mapClickSlice.actions;
 export default mapClickSlice.reducer;

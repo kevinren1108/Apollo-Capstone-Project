@@ -8,10 +8,11 @@ import {
   Polyline,
 } from '@react-google-maps/api';
 import { useSelector, useDispatch } from 'react-redux';
-import { mapClickAdd, markerClick, generateData } from '../store/mapClickSlice';
+import { mapClickAdd, markerClick, generateData, waypointUpdate } from '../store/mapClickSlice';
 import { updateVehicleCount, updateParkingLotsCount, updateTotalParkingSpotCount, updateInUseCount } from '../store/parkingStatusSlice';
 import "./map.css"
 import Graph from '../structure/graph';
+import { composeSyncValidators } from 'react-admin';
 
 const libraries = ['drawing'];
 const MAP_API = process.env.REACT_APP_API_KEY;
@@ -35,6 +36,7 @@ function Map() {
     type: 'waypoint'
   });
   let [clickMarkerPosition, setClickMarkerPosition] = useState({
+    markerID: 0,
     lat: 50.417884,
     lng: -104.588749,
   })
@@ -45,37 +47,7 @@ function Map() {
   let [animateMarkerId, setAnimateMarkerId] = useState(-1)
 
   useEffect(() => {
-
-    // console.log('polyMarker', polyMarker)
-    // console.log("currentpolyLine", currentpolyLine)
-    // console.log("totalPolyLine", totalpolyLine)
-    // console.log(animateMarkerId)
-    if (polyMarker.length > 1) {
-      graph.addEdge(polyMarker[polyMarker.length - 2], polyMarker[polyMarker.length - 1]);
-
-    } else {
-
-    }
-    let postData = JSON.parse(JSON.stringify(graph.vertiecs))
-    postData.forEach(item => {
-      for (let k in item) {
-        for (let v in graph.edgeList) {
-          if (k == v) {
-            item[k]['neighbor'] = graph.edgeList[v]
-          }
-        }
-      }
-    });
-    console.log("postdata", postData)
-    dispatch(generateData({
-      data: postData
-    }))
-    // console.log(graph)
-  }, [polyMarker]);
-
   
-  useEffect(() => {
-    
     fetch('https://ezparking114514.com:9195/loadWP').then(response => {
       return response.json()
     }).then(res => {
@@ -83,8 +55,8 @@ function Map() {
       res.data.sort(function (a, b) {
         return Number(a.name) - Number(b.name)
       })
-      console.log("fetching")
-      console.log(res.data)
+      
+      
       
       let markerMsgArr = []
       for (let i = 0; i < res.data.length; i++) {
@@ -136,15 +108,48 @@ function Map() {
           ])
         }
       }
-      console.log("graph",graph)
-      console.log(lineArr)
+      // console.log("graph",graph)
+      // console.log(lineArr)
       setTotalPolyLine(lineArr)
-
-
     }).catch(err => {
 
-    })
+    },)
   }, [])
+
+  useEffect(() => {
+
+    // console.log('polyMarker', polyMarker)
+    // console.log("currentpolyLine", currentpolyLine)
+    // console.log("totalPolyLine", totalpolyLine)
+    // console.log(animateMarkerId)
+    if (polyMarker.length > 1) {
+      graph.addEdge(polyMarker[polyMarker.length - 2], polyMarker[polyMarker.length - 1]);
+
+    } else {
+
+    }
+    let postData = JSON.parse(JSON.stringify(graph.vertiecs))
+    postData.forEach(item => {
+      for (let k in item) {
+        for (let v in graph.edgeList) {
+          if (k == v) {
+            item[k]['neighbor'] = graph.edgeList[v]
+          }
+        }
+      }
+    });
+    
+    let transformData = {}
+    for(let i = 0; i < postData.length;i++) {
+      let arr = Object.entries(postData[i])[0]
+      transformData[arr[0]] = arr[1]
+    }
+    // console.log("postdata", postData)
+    dispatch(generateData({
+      data: transformData
+    }))
+    // console.log(graph)
+  }, [polyMarker]);
 
 
   const onLoad = React.useCallback(function callback(map) {
@@ -156,6 +161,7 @@ function Map() {
 
   const editMenuState = useSelector((state) => state.editMenuSelected);
   const mapMarkerList = useSelector((state) => state.mapClicked);
+
 
   const infoWin = useRef(null);
   let editTool = 'null';
@@ -180,10 +186,24 @@ function Map() {
     let lng = e.latLng.lng()
     setMsgIsOpen(true)
     setClickMarkerPosition({
+      markerID: index,
       lat: lat + 0.0004,
       lng: lng,
       type: markerMsg[index].type
     })
+  }
+
+  const onMarkerDragComplete = (e, index) => {
+    const position = {
+          lat: e.latLng.lat(),
+          lng: e.latLng.lng(),
+          index: index
+        }
+    graph.vertiecs[index][index].lat = e.latLng.lat()
+    graph.vertiecs[index][index].lng = e.latLng.lng()
+    dispatch(waypointUpdate(position));
+    onRightClick(e)
+    
   }
 
   const onMarkerDbClick = (e, index) => {
@@ -208,11 +228,6 @@ function Map() {
       id: index
     }))
 
-    // console.log('ssssssss')
-    // console.log(polyMarker,polyMarker.length)
-    // if(polyMarker.length == 0) {
-    //   setAnimateMarkerId([...animateMarkerId,index])
-    // }
     setAnimateMarkerId(index)
     graph.addVerTex(index, {
       lat: lat,
@@ -250,13 +265,81 @@ function Map() {
     dispatch(mapClickAdd(position));
     setCurMarkerPosition(position);
     setPointValue(event.target.value)
-    console.log("event.target.value", event.target.value)
+    
     setIsOpen(true)
     // console.log(mapMarkerList.clickLog)
   };
   const onChangePoint = (event) => {
     setPointValue(event.target.value)
   }
+
+  const updateWaypoint = (updateIndex, updateType) => {
+    if (updateType == "Parking lot") {
+      let parkingLotSpots = prompt("Please Entry Avaiable Spots")
+      let parkingLotName = prompt("Please Entry Parking LotName")
+
+      const body = JSON.stringify({
+        index: updateIndex.toString(),
+        newName: parkingLotName,
+        newAmount: parkingLotSpots
+      })
+
+      console.log(`Parking lot ${updateIndex} update, JSON: ${body}`)
+
+      // const request = new Request('https://ezparking114514.com:9195/updatePLwp', 
+      // {
+      //   method: 'POST',
+      //   body: body,
+      //   headers: new Headers({'Content-Type': 'application/json' }),
+      // });
+      // fetch(request).then(response => 
+      //   {
+      //     if (response.status < 200 || response.status >= 300) {
+      //       console.log(`Update fail with ${response.statusText} as reason`);
+      //     }
+      //     return response.json();
+      //   }).then(response => {
+      //       console.log(`Way point ${updateIndex} is Update`)
+      //   }).catch(() => {
+      //       throw new Error('Login fail, Check your username and password')
+      //   }
+      // );
+    }
+ 
+    else if (updateType == "Destination") {
+      let destinationName = prompt("Please Entry Destination Name")
+
+      const body = JSON.stringify({
+        index: updateIndex.toString(),
+        newName: destinationName
+      })
+
+      console.log(`destinationName ${updateIndex} update, JSON: ${body}`)
+
+      // const request = new Request('https://ezparking114514.com:9195/updateDNwp', 
+      // {
+      //   method: 'POST',
+      //   body: body,
+      //   headers: new Headers({'Content-Type': 'application/json' }),
+      // });
+      // fetch(request).then(response => 
+      //   {
+      //     if (response.status < 200 || response.status >= 300) {
+      //       console.log(`Update fail with ${response.statusText} as reason`);
+      //     }
+      //     return response.json();
+      //   }).then(response => {
+      //       console.log(`Way point ${updateIndex} is Update`)
+      //   }).catch(() => {
+      //       throw new Error('Login fail, Check your username and password')
+      //   }
+      // );
+
+    }
+    
+  }
+  
+
   const save = () => {
     let label = ""
     for (let i in selectOption) {
@@ -287,14 +370,66 @@ function Map() {
       type: label
     }])
   }
+
+
+  const deleteWaypoint = (deleteIndex) => {
+    const body = JSON.stringify({"name": deleteIndex.toString() })
+    console.log(`Delete index: ${deleteIndex}, JSON: ${body}`)
+   
+
+    // const request = new Request('https://ezparking114514.com:9195/deleteWP', 
+    // {
+    //   method: 'POST',
+    //   body: body,
+    //   headers: new Headers({'Content-Type': 'application/json' }),
+    // });
+    // fetch(request).then(response => 
+    //   {
+    //     if (response.status < 200 || response.status >= 300) {
+    //       console.log(`Delete fail with ${response.statusText} as reason`);
+    //     }
+    //     return response.json();
+    //   }).then(response => {
+    //       console.log(`Way point ${deleteIndex} is deleted`)
+    //   }).catch(() => {
+    //       throw new Error('Login fail, Check your username and password')
+    //   }
+    // );
+  }
+
+  
   const saveBtnStyle = {
     border: "1px solid #ccc",
-    backgroundColor: "rgb(161,188,242)",
+    backgroundColor: "rgb(161, 188, 242)",
     padding: "5px 10px",
     color: "#fff",
     borderRadius: "5px",
     marginLeft: "10px"
   }
+
+  const deleteBtnStyle = {
+    border: "1px solid #ccc",
+    backgroundColor: "rgb(242, 162, 161)",
+    padding: "5px 10px",
+    color: "#fff",
+    borderRadius: "5px",
+    display: "flex",
+    marginLeft: "auto",
+    marginTop: "10px"
+  }
+
+  const updateBtnStyle = {
+    border: "1px solid #ccc",
+    backgroundColor: "rgb(162, 161, 242)",
+    padding: "5px 10px",
+    color: "#fff",
+    borderRadius: "5px",
+    display: "flex",
+    marginRight: "auto",
+    marginTop: "10px",
+    display: "inline"
+  }
+
   const changeCloseClick = (e) => {
 
     setIsOpen(false)
@@ -341,6 +476,7 @@ function Map() {
       </div>
     );
   }
+  const prevLength = mapMarkerList.clickLog.length - 1
 
   return (
     <GoogleMap
@@ -377,39 +513,140 @@ function Map() {
         }}
         onMarkerComplete={addMarkerCall}
       />
+      
       {/* new marker  */}
       {mapMarkerList.clickLog.map((marker, index) => {
         const position = { lat: Number(marker[0]), lng: Number(marker[1] * 1) };
-        return (
-          <Marker
-            // onLoad={marker => {
-            //     const customIcon = (opts) => Object.assign({
-            //       path: 'M12.75 0l-2.25 2.25 2.25 2.25-5.25 6h-5.25l4.125 4.125-6.375 8.452v0.923h0.923l8.452-6.375 4.125 4.125v-5.25l6-5.25 2.25 2.25 2.25-2.25-11.25-11.25zM10.5 12.75l-1.5-1.5 5.25-5.25 1.5 1.5-5.25 5.25z',
-            //       fillColor: '#34495e',
-            //       fillOpacity: 1,
-            //       strokeColor: '#000',
-            //       strokeWeight: 1,
-            //       scale: 1,
-            //     }, opts);
+        if(index >= prevLength ){
+          return (
+            <Marker
+              onLoad={marker => {
+                  const customIcon = (opts) => Object.assign({
+                    path: 'M 0.1 9.7 c 5.3025 0 9.6 -4.2975 9.6 -9.6 S 5.4025 -9.5 0.1 -9.5 S -9.5 -5.2025 -9.5 0.1 S -5.2025 9.7 0.1 9.7 z',
+                    fillColor: '#3949ab',
+                    fillOpacity: 1,
+                    strokeColor: '#000',
+                    strokeWeight: 1,
+                    scale: 1,
+                  }, opts);
+  
+                  marker.setIcon(customIcon({
+                    fillColor: 'green',
+                    strokeColor: 'white'
+                  }));
+  
+                }}
+              
+              animation={(animateMarkerId == index) && window.google.maps.Animation.BOUNCE}
+              zIndex={9999999999999}
+              // label={index}
+              key={index}
+              position={position}
+              onClick={(e) => { onMarkerClick(e, index) }}
+              onDblClick={(e) => { onMarkerDbClick(e, index) }}
+              onDragEnd={(e) => {onMarkerDragComplete(e, index) }}
+              draggable = {true}
+              cursor={'pointer'}
+            ></Marker>
+          );
+        }
+        else if(markerMsg[index]["type"][0] == "W"){
+          return (
+            <Marker
+              onLoad={marker => {
+                  const customIcon = (opts) => Object.assign({
+                    path: 'M 0.1 9.7 c 5.3025 0 9.6 -4.2975 9.6 -9.6 S 5.4025 -9.5 0.1 -9.5 S -9.5 -5.2025 -9.5 0.1 S -5.2025 9.7 0.1 9.7 z',
+                    fillColor: '#3949ab',
+                    fillOpacity: 1,
+                    strokeColor: '#000',
+                    strokeWeight: 1,
+                    scale: 1,
+                  }, opts);
+  
+                  marker.setIcon(customIcon({
+                    fillColor: 'green',
+                    strokeColor: 'white'
+                  }));
+  
+                }}
+              
+              animation={(animateMarkerId == index) && window.google.maps.Animation.BOUNCE}
+              zIndex={9999999999999}
+              // label={index}
+              key={index}
+              position={position}
+              onClick={(e) => { onMarkerClick(e, index) }}
+              onDblClick={(e) => { onMarkerDbClick(e, index) }}
+              onDragEnd={(e) => {onMarkerDragComplete(e, index) }}
+              draggable = {true}
+              cursor={'pointer'}
+            ></Marker>
+          );
+        }
+        else if(markerMsg[index]["type"][0] == "P"){
+          return (
+            <Marker
+              onLoad={marker => {
+                  const customIcon = (opts) => Object.assign({
+                    path: "M -8.3 -9.9 C -10.065 -9.9 -11.5 -8.465 -11.5 -6.7 V 9.3 c 0 1.765 1.435 3.2 3.2 3.2 H 7.7 c 1.765 0 3.2 -1.435 3.2 -3.2 V -6.7 c 0 -1.765 -1.435 -3.2 -3.2 -3.2 H -8.3 z M -1.9 1.3 h 2.4 c 0.885 0 1.6 -0.715 1.6 -1.6 s -0.715 -1.6 -1.6 -1.6 H -1.9 v 3.2 z m 2.4 3.2 H -1.9 v 1.6 c 0 0.885 -0.715 1.6 -1.6 1.6 s -1.6 -0.715 -1.6 -1.6 V 2.9 V -3.1 c 0 -1.105 0.895 -2 2 -2 h 3.6 c 2.65 0 4.8 2.15 4.8 4.8 s -2.15 4.8 -4.8 4.8 z",
+                    fillOpacity: 1,
+                    strokeWeight: 1,
+                    scale: 1,
+                  }, opts);
+  
+                  marker.setIcon(customIcon({
+                    fillColor: '#3949ab',
+                    strokeColor: 'white'
+                  }));
+  
+                }}
 
-            //     marker.setIcon(customIcon({
-            //       fillColor: 'green',
-            //       strokeColor: 'white'
-            //     }));
-
-            //   }}
-            // onMouseDown={}
-            animation={(animateMarkerId == index) && window.google.maps.Animation.BOUNCE}
-            zIndex={9999999999999}
-            // label={index}
-            key={index}
-            position={position}
-            onClick={(e) => { onMarkerClick(e, index) }}
-            onDblClick={(e) => { onMarkerDbClick(e, index) }}
-
-            cursor={'pointer'}
-          ></Marker>
-        );
+              animation={(animateMarkerId == index) && window.google.maps.Animation.BOUNCE}
+              zIndex={9999999999999}
+              // label={index}
+              key={index}
+              position={position}
+              onClick={(e) => { onMarkerClick(e, index) }}
+              onDblClick={(e) => { onMarkerDbClick(e, index) }}
+              onDragEnd={(e) => {onMarkerDragComplete(e, index) }}
+              draggable = {true}
+              cursor={'pointer'}
+            ></Marker>
+          );
+        }
+        else if(markerMsg[index]["type"][0] == "D"){
+          return (
+            <Marker
+              onLoad={marker => {
+                  const customIcon = (opts) => Object.assign({
+                    path: "m 14.29 -1.225 c 0 0.9 -0.75 1.605 -1.6 1.605 h -1.6 l 0.035 8.01 c 0 0.135 -0.01 0.27 -0.025 0.405 V 9.6 c 0 1.105 -0.895 2 -2 2 H 8.3 c -0.055 0 -0.11 0 -0.165 -0.005 c -0.07 0.005 -0.14 0.005 -0.21 0.005 H 6.3 H 5.1 c -1.105 0 -2 -0.895 -2 -2 V 8.4 V 5.2 c 0 -0.885 -0.715 -1.6 -1.6 -1.6 H -1.7 c -0.885 0 -1.6 0.715 -1.6 1.6 v 3.2 v 1.2 c 0 1.105 -0.895 2 -2 2 H -6.5 H -8.095 c -0.075 0 -0.15 -0.005 -0.225 -0.01 c -0.06 0.005 -0.12 0.01 -0.18 0.01 H -9.3 c -1.105 0 -2 -0.895 -2 -2 V 4 c 0 -0.045 0 -0.095 0.005 -0.14 V 0.38 H -12.9 c -0.9 0 -1.6 -0.7 -1.6 -1.605 c 0 -0.45 0.15 -0.85 0.5 -1.2 L -1.18 -13.6 c 0.35 -0.35 0.75 -0.4 1.1 -0.4 s 0.75 0.1 1.05 0.35 L 13.74 -2.425 c 0.4 0.35 0.6 0.75 0.55 1.2 z",
+                    
+                    fillOpacity: 1,
+                    strokeColor: '#000',
+                    strokeWeight: 1,
+                    scale: 1,
+                  }, opts);
+  
+                  marker.setIcon(customIcon({
+                    fillColor: '#f57f17',
+                    strokeColor: 'white'
+                  }));
+  
+                }}
+              
+              animation={(animateMarkerId == index) && window.google.maps.Animation.BOUNCE}
+              zIndex={9999999999999}
+              // label={index}
+              key={index}
+              position={position}
+              onClick={(e) => { onMarkerClick(e, index) }}
+              onDblClick={(e) => { onMarkerDbClick(e, index) }}
+              onDragEnd={(e) => {onMarkerDragComplete(e, index) }}
+              draggable = {true}
+              cursor={'pointer'}
+            ></Marker>
+          );
+        }
       })}
       {/* message dialog */}
       {
@@ -432,16 +669,35 @@ function Map() {
       }
       {/* check waypoint type */}
       {
-        msgIsOpen ? (<InfoWindow
+        msgIsOpen ? (
+        <InfoWindow
           onLoad={onLoad}
           position={clickMarkerPosition}
           options={{ ariaLabel: '' }}
           onCloseClick={() => { setMsgIsOpen(false) }}
         >
-          <div style={{}}>
+          <div >
             <p>Lat: {clickMarkerPosition.lat - 0.0004}</p>
             <p>Lng: {clickMarkerPosition.lng}</p>
-            <p>Info: {clickMarkerPosition.type}</p>
+            <p>Type: {clickMarkerPosition.type.split("(")[0]}</p>
+            {clickMarkerPosition.type[0] == "D"? (<p>{clickMarkerPosition.type.split("(")[1].slice(0,-1)}</p>) :null }
+            {clickMarkerPosition.type[0] == "P"? (<p>{clickMarkerPosition.type.split("(")[1].slice(0,-1)}</p>) :null }
+            {clickMarkerPosition.type[0] == "P"? (<p>{clickMarkerPosition.type.split("(")[2].slice(0,-1)}</p>) :null }
+
+            <div className="flex justify-between">
+              {clickMarkerPosition.type[0] == "W"? null: (<button 
+              style={
+                updateBtnStyle
+                } onClick={
+                  () => updateWaypoint(clickMarkerPosition.markerID, clickMarkerPosition.type.split("(")[0])
+                }>Update</button>)
+              }       
+              <button style={deleteBtnStyle} onClick={() => deleteWaypoint(clickMarkerPosition.markerID)}>Delete</button>
+            </div>
+            
+            
+            
+            
           </div>
         </InfoWindow>) : null
       }
