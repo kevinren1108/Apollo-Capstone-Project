@@ -36,6 +36,7 @@ function Map() {
     type: 'waypoint'
   });
   let [clickMarkerPosition, setClickMarkerPosition] = useState({
+    markerID: 0,
     lat: 50.417884,
     lng: -104.588749,
   })
@@ -185,6 +186,7 @@ function Map() {
     let lng = e.latLng.lng()
     setMsgIsOpen(true)
     setClickMarkerPosition({
+      markerID: index,
       lat: lat + 0.0004,
       lng: lng,
       type: markerMsg[index].type
@@ -270,6 +272,74 @@ function Map() {
   const onChangePoint = (event) => {
     setPointValue(event.target.value)
   }
+
+  const updateWaypoint = (updateIndex, updateType) => {
+    if (updateType == "Parking lot") {
+      let parkingLotSpots = prompt("Please Entry Avaiable Spots")
+      let parkingLotName = prompt("Please Entry Parking LotName")
+
+      const body = JSON.stringify({
+        index: updateIndex.toString(),
+        newName: parkingLotName,
+        newAmount: parkingLotSpots
+      })
+
+      console.log(`Parking lot ${updateIndex} update, JSON: ${body}`)
+
+      // const request = new Request('https://ezparking114514.com:9195/updatePLwp', 
+      // {
+      //   method: 'POST',
+      //   body: body,
+      //   headers: new Headers({'Content-Type': 'application/json' }),
+      // });
+      // fetch(request).then(response => 
+      //   {
+      //     if (response.status < 200 || response.status >= 300) {
+      //       console.log(`Update fail with ${response.statusText} as reason`);
+      //     }
+      //     return response.json();
+      //   }).then(response => {
+      //       console.log(`Way point ${updateIndex} is Update`)
+      //   }).catch(() => {
+      //       throw new Error('Login fail, Check your username and password')
+      //   }
+      // );
+    }
+ 
+    else if (updateType == "Destination") {
+      let destinationName = prompt("Please Entry Destination Name")
+
+      const body = JSON.stringify({
+        index: updateIndex.toString(),
+        newName: destinationName
+      })
+
+      console.log(`destinationName ${updateIndex} update, JSON: ${body}`)
+
+      // const request = new Request('https://ezparking114514.com:9195/updateDNwp', 
+      // {
+      //   method: 'POST',
+      //   body: body,
+      //   headers: new Headers({'Content-Type': 'application/json' }),
+      // });
+      // fetch(request).then(response => 
+      //   {
+      //     if (response.status < 200 || response.status >= 300) {
+      //       console.log(`Update fail with ${response.statusText} as reason`);
+      //     }
+      //     return response.json();
+      //   }).then(response => {
+      //       console.log(`Way point ${updateIndex} is Update`)
+      //   }).catch(() => {
+      //       throw new Error('Login fail, Check your username and password')
+      //   }
+      // );
+
+    }
+    
+  }
+  
+
   const save = () => {
     let label = ""
     for (let i in selectOption) {
@@ -300,14 +370,66 @@ function Map() {
       type: label
     }])
   }
+
+
+  const deleteWaypoint = (deleteIndex) => {
+    const body = JSON.stringify({"name": deleteIndex.toString() })
+    console.log(`Delete index: ${deleteIndex}, JSON: ${body}`)
+   
+
+    // const request = new Request('https://ezparking114514.com:9195/deleteWP', 
+    // {
+    //   method: 'POST',
+    //   body: body,
+    //   headers: new Headers({'Content-Type': 'application/json' }),
+    // });
+    // fetch(request).then(response => 
+    //   {
+    //     if (response.status < 200 || response.status >= 300) {
+    //       console.log(`Delete fail with ${response.statusText} as reason`);
+    //     }
+    //     return response.json();
+    //   }).then(response => {
+    //       console.log(`Way point ${deleteIndex} is deleted`)
+    //   }).catch(() => {
+    //       throw new Error('Login fail, Check your username and password')
+    //   }
+    // );
+  }
+
+  
   const saveBtnStyle = {
     border: "1px solid #ccc",
-    backgroundColor: "rgb(161,188,242)",
+    backgroundColor: "rgb(161, 188, 242)",
     padding: "5px 10px",
     color: "#fff",
     borderRadius: "5px",
     marginLeft: "10px"
   }
+
+  const deleteBtnStyle = {
+    border: "1px solid #ccc",
+    backgroundColor: "rgb(242, 162, 161)",
+    padding: "5px 10px",
+    color: "#fff",
+    borderRadius: "5px",
+    display: "flex",
+    marginLeft: "auto",
+    marginTop: "10px"
+  }
+
+  const updateBtnStyle = {
+    border: "1px solid #ccc",
+    backgroundColor: "rgb(162, 161, 242)",
+    padding: "5px 10px",
+    color: "#fff",
+    borderRadius: "5px",
+    display: "flex",
+    marginRight: "auto",
+    marginTop: "10px",
+    display: "inline"
+  }
+
   const changeCloseClick = (e) => {
 
     setIsOpen(false)
@@ -548,16 +670,35 @@ function Map() {
       }
       {/* check waypoint type */}
       {
-        msgIsOpen ? (<InfoWindow
+        msgIsOpen ? (
+        <InfoWindow
           onLoad={onLoad}
           position={clickMarkerPosition}
           options={{ ariaLabel: '' }}
           onCloseClick={() => { setMsgIsOpen(false) }}
         >
-          <div style={{}}>
+          <div >
             <p>Lat: {clickMarkerPosition.lat - 0.0004}</p>
             <p>Lng: {clickMarkerPosition.lng}</p>
-            <p>Info: {clickMarkerPosition.type}</p>
+            <p>Type: {clickMarkerPosition.type.split("(")[0]}</p>
+            {clickMarkerPosition.type[0] == "D"? (<p>{clickMarkerPosition.type.split("(")[1].slice(0,-1)}</p>) :null }
+            {clickMarkerPosition.type[0] == "P"? (<p>{clickMarkerPosition.type.split("(")[1].slice(0,-1)}</p>) :null }
+            {clickMarkerPosition.type[0] == "P"? (<p>{clickMarkerPosition.type.split("(")[2].slice(0,-1)}</p>) :null }
+
+            <div className="flex justify-between">
+              {clickMarkerPosition.type[0] == "W"? null: (<button 
+              style={
+                updateBtnStyle
+                } onClick={
+                  () => updateWaypoint(clickMarkerPosition.markerID, clickMarkerPosition.type.split("(")[0])
+                }>Update</button>)
+              }       
+              <button style={deleteBtnStyle} onClick={() => deleteWaypoint(clickMarkerPosition.markerID)}>Delete</button>
+            </div>
+            
+            
+            
+            
           </div>
         </InfoWindow>) : null
       }

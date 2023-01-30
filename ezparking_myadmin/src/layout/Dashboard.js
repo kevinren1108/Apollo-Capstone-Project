@@ -19,9 +19,21 @@ function Dashboard(){
             setCurrentUsedSpot(res.data) 
 
         }).catch(err => {
-
         },)
     }, [])    
+
+    let [totalSpot, setTotalSpot] = useState(0)
+    useEffect(() => {
+  
+        fetch('https://ezparking114514.com:9195/getTotalNum').then(response => {
+          return response.json()
+        }).then(res => {
+            setTotalSpot(res.data) 
+
+        }).catch(err => {
+
+        },)
+    }, [])  
     const parkingStatus = useSelector((state) => state.parkingStatus);
 
     return (
@@ -33,13 +45,13 @@ function Dashboard(){
                 <div className="grid grid-cols-12 gap-x-6 min-h-screen ">
                     
                     <div className=" h-5 col-start-1 col-end-7">
-                        <TopSection itemName={"Total Parking Spot"} itemValue={parkingStatus.totalParkingSpot}/>
+                        <TopSection itemName={"Total Parking Spot"} itemValue={(totalSpot == []) ? 'Loading' : totalSpot}/>
                     </div>
                     <div className=" h-5 col-start-7 col-end-13">
                         <TopSection itemName={"In Use"} itemValue={(currentUsedSpot == []) ? 'Loading' : currentUsedSpot}/>
                     </div>
 
-                    <div className=" h-1 col-start-1 col-end-13">
+                    <div className=" h-5 col-start-1 col-end-13">
                         <div className=" bg-[#ffffff] rounded-md drop-shadow p-3 ">  
                             <div className=' text-2xl text-gray-400 flex justify-evenly'>
                                 <p>
@@ -54,13 +66,13 @@ function Dashboard(){
                             </div>
                             <div className=' text-2xl text-gray-400 flex justify-evenly'>
                                 <p >
-                                    <FontAwesomeIcon icon={faComputerMouse} className=" text-red-200"/> Click to Add Waypoint 
+                                    <FontAwesomeIcon icon={faComputerMouse} className=" text-red-200"/> Click to add Waypoint 
                                 </p>
                                 <p>
                                     <FontAwesomeIcon icon={faArrowPointer} className="text-orange-400"/> Double Click to Connect Waypoint
                                 </p>
                                 <p>
-                                    <FontAwesomeIcon icon={faComputerMouse} className="text-red-600"/> Right Click to Stop Connecting Waypoint 
+                                    <FontAwesomeIcon icon={faComputerMouse} className="text-red-600"/> Right Click to stop Connecting Waypoint 
                                 </p>
                             </div>
                             
