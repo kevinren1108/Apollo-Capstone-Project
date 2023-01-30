@@ -19,7 +19,6 @@ function Dashboard(){
             setCurrentUsedSpot(res.data) 
 
         }).catch(err => {
-
         },)
     }, [])    
 
@@ -35,7 +34,6 @@ function Dashboard(){
 
         },)
     }, [])  
-
     const parkingStatus = useSelector((state) => state.parkingStatus);
 
     return (

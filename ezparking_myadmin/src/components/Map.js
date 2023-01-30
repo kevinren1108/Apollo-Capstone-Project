@@ -516,6 +516,7 @@ function Map() {
       
       {/* new marker  */}
       {mapMarkerList.clickLog.map((marker, index) => {
+        
         const position = { lat: Number(marker[0]), lng: Number(marker[1] * 1) };
         if(index >= prevLength ){
           return (
