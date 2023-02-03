@@ -39,3 +39,7 @@
     ```
     python main.py
     ```
+9. ON upsampling.py, change Line 156 to
+    ```
+    return F.interpolate(input, self.size, self.scale_factor, self.mode, self.align_corners)
+    ```
