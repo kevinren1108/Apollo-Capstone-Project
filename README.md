@@ -29,6 +29,8 @@ Driving is one of the preferred means of transportation for modern people, and v
 
 [System Design](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/documents/Planning/system%20design.pdf)
 
+[Gantt Chart](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/documents/Planning/Gantt_chart_upto_MS2.4.pdf)
+
 ## Design
 
 [Lofi Design](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/design/lofi%20design.pdf)
