@@ -23,7 +23,7 @@
     ```
 4. Activate the virtual environment
     ```
-    $ venv/Scripts/activate
+    $ venv\Scripts\activate
     ```
 6. Install pytorch
 
@@ -31,6 +31,8 @@
     ```
     $ pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
     ```
+    > If using CPU other then CUDA, change line 23, 36 of detector.py from .half() to .float()
+
 7. Install packages
     ```
     $ pip install -r requirements.txt

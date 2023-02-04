@@ -1,16 +1,36 @@
 import numpy as np
-
 import tracker
 from detector import Detector
 import cv2
 import urllib.request
+from multiprocessing import Process, Queue
+import os
+import time
+import threading
+import sys
 
-if __name__ == '__main__':
+def request_task_inc(parkinglotID):
+    print("inc start")
+    startTime = time.perf_counter()
+    urllib.request.urlopen('https://ezparking114514.com:9195/countUp?Parkinglot=' + parkinglotID)
+    endTime = time.perf_counter()
+    print("inc end, time: ", endTime-startTime)
 
-    # 根据视频尺寸，填充一个polygon，供撞线计算使用
+def request_task_dec(parkinglotID):
+    print("dec start")
+    startTime = time.perf_counter()
+    urllib.request.urlopen('https://ezparking114514.com:9195/countDown?Parkinglot=' + parkinglotID)
+    endTime = time.perf_counter()
+    print("inc end, time: ", endTime-startTime)
+
+def inc(parkinglotID):
+    threading.Thread(target=request_task_inc, args=(parkinglotID, )).start()
+
+def dec(parkinglotID):
+    threading.Thread(target=request_task_dec, args=(parkinglotID, )).start()
+
+def detection(incQ: Queue, decQ: Queue)->None:
     mask_image_temp = np.zeros((1080, 1920), dtype=np.uint8)
-
-    # 初始化2个撞线polygon
     list_pts_blue = [[204, 305], [227, 431], [755, 522], [1101, 522], [1900, 395], [1902, 289], [1125, 437], [704, 437],
                      [299, 375], [267, 289]]
     #list_pts_blue = [[204, 305], [227, 431], [605, 522], [1101, 464], [1900, 601], [1902, 495], [1125, 379], [604, 437],
@@ -18,8 +38,6 @@ if __name__ == '__main__':
     ndarray_pts_blue = np.array(list_pts_blue, np.int32)
     polygon_blue_value_1 = cv2.fillPoly(mask_image_temp, [ndarray_pts_blue], color=1)
     polygon_blue_value_1 = polygon_blue_value_1[:, :, np.newaxis]
-
-    # 填充第二个polygon
     mask_image_temp = np.zeros((1080, 1920), dtype=np.uint8)
     list_pts_yellow = [[190, 308], [215, 460], [730, 554], [1107, 540], [1898, 438], [1893, 495], [1150, 608],
                        [675, 620], [153, 525], [115, 331]]
@@ -28,145 +46,79 @@ if __name__ == '__main__':
     ndarray_pts_yellow = np.array(list_pts_yellow, np.int32)
     polygon_yellow_value_2 = cv2.fillPoly(mask_image_temp, [ndarray_pts_yellow], color=2)
     polygon_yellow_value_2 = polygon_yellow_value_2[:, :, np.newaxis]
-
-    # 撞线检测用mask，包含2个polygon，（值范围 0、1、2），供撞线计算使用
     polygon_mask_blue_and_yellow = polygon_blue_value_1 + polygon_yellow_value_2
-
-    # 缩小尺寸，1920x1080->960x540
     polygon_mask_blue_and_yellow = cv2.resize(polygon_mask_blue_and_yellow, (960, 540))
-
-    # 蓝 色盘 b,g,r
     blue_color_plate = [255, 0, 0]
-    # 蓝 polygon图片
     blue_image = np.array(polygon_blue_value_1 * blue_color_plate, np.uint8)
-
-    # 黄 色盘
     yellow_color_plate = [0, 255, 255]
-    # 黄 polygon图片
     yellow_image = np.array(polygon_yellow_value_2 * yellow_color_plate, np.uint8)
-
-    # 彩色图片（值范围 0-255）
     color_polygons_image = blue_image + yellow_image
-    # 缩小尺寸，1920x1080->960x540
     color_polygons_image = cv2.resize(color_polygons_image, (960, 540))
-
-    # list 与蓝色polygon重叠
     list_overlapping_blue_polygon = []
-
-    # list 与黄色polygon重叠
     list_overlapping_yellow_polygon = []
-
-    # 进入数量
     down_count = 0
-    # 离开数量
     up_count = 0
-
     font_draw_number = cv2.FONT_HERSHEY_SIMPLEX
     draw_text_postion = (int(960 * 0.01), int(540 * 0.05))
-
-    # 初始化 yolov5
     detector = Detector()
 
-    # 打开视频
-    capture = cv2.VideoCapture('./video/test.mp4')
-    # capture = cv2.VideoCapture('/mnt/datasets/datasets/towncentre/TownCentreXVID.avi')
+    capture = cv2.VideoCapture('./video/test2.mp4')
 
     while True:
-        # 读取每帧图片
         _, im = capture.read()
         if im is None:
             break
-
-        # 缩小尺寸，1920x1080->960x540
         im = cv2.resize(im, (960, 540))
-
         list_bboxs = []
         bboxes = detector.detect(im)
-
-        # 如果画面中 有bbox
         if len(bboxes) > 0:
             list_bboxs = tracker.update(bboxes, im)
-
-            # 画框
-            # 撞线检测点，(x1，y1)，y方向偏移比例 0.0~1.0
             output_image_frame = tracker.draw_bboxes(im, list_bboxs, line_thickness=None)
             pass
         else:
-            # 如果画面中 没有bbox
             output_image_frame = im
         pass
-
-        # 输出图片
         output_image_frame = cv2.add(output_image_frame, color_polygons_image)
-
         if len(list_bboxs) > 0:
-            # ----------------------判断撞线----------------------
             for item_bbox in list_bboxs:
                 x1, y1, x2, y2, label, track_id = item_bbox
-
-                # 撞线检测点，(x1，y1)，y方向偏移比例 0.0~1.0
                 y1_offset = int(y1 + ((y2 - y1) * 0.6))
-
-                # 撞线的点
                 y = y1_offset
                 x = x1
-
                 if polygon_mask_blue_and_yellow[y, x] == 1:
-                    # 如果撞 蓝polygon
                     if track_id not in list_overlapping_blue_polygon:
                         list_overlapping_blue_polygon.append(track_id)
                     pass
-
-                    # 判断 黄polygon list 里是否有此 track_id
-                    # 有此 track_id，则 认为是 外出方向
                     if track_id in list_overlapping_yellow_polygon:
-                        # 外出+1
-                        up_count += 1
+                        decQ.put(1)
+                        # dec()
                         #通过对后台发送request调整后台数据-1
-                        resp = urllib.request.urlopen('https://ezparking114514.com:9195/countDown')
-
-                        print(f'类别: {label} | id: {track_id} | 上行撞线 | 上行撞线总数: {up_count} | 上行id列表: {list_overlapping_yellow_polygon}')
-
-                        # 删除 黄polygon list 中的此id
+                        # resp = urllib.request.urlopen('https://ezparking114514.com:9195/countDown')  
+                        print(f'Type: {label} | id: {track_id} | going up | going up total: {up_count} | all going up : {list_overlapping_yellow_polygon}')
                         list_overlapping_yellow_polygon.remove(track_id)
-
                         pass
                     else:
-                        # 无此 track_id，不做其他操作
                         pass
 
                 elif polygon_mask_blue_and_yellow[y, x] == 2:
-                    # 如果撞 黄polygon
                     if track_id not in list_overlapping_yellow_polygon:
                         list_overlapping_yellow_polygon.append(track_id)
                     pass
-
-                    # 判断 蓝polygon list 里是否有此 track_id
-                    # 有此 track_id，则 认为是 进入方向
                     if track_id in list_overlapping_blue_polygon:
-                        # 进入+1
-                        down_count += 1
-                        #通过对后台发送request调整后台数据+1
-                        resp = urllib.request.urlopen('https://ezparking114514.com:9195/countUp')
-
-
-                        print(f'类别: {label} | id: {track_id} | 下行撞线 | 下行撞线总数: {down_count} | 下行id列表: {list_overlapping_blue_polygon}')
-
-                        # 删除 蓝polygon list 中的此id
+                        incQ.put(1)
+                        # inc()
+                        # resp = urllib.request.urlopen('https://ezparking114514.com:9195/countUp')                      
+                        print(f'Type: {label} | id: {track_id} | going down | going down total: {down_count} | all going down : {list_overlapping_blue_polygon}')
                         list_overlapping_blue_polygon.remove(track_id)
-
                         pass
                     else:
-                        # 无此 track_id，不做其他操作
                         pass
                     pass
                 else:
                     pass
                 pass
-
             pass
 
-            # ----------------------清除无用id----------------------
             list_overlapping_all = list_overlapping_yellow_polygon + list_overlapping_blue_polygon
             for id1 in list_overlapping_all:
                 is_found = False
@@ -178,7 +130,6 @@ if __name__ == '__main__':
                 pass
 
                 if not is_found:
-                    # 如果没找到，删除id
                     if id1 in list_overlapping_yellow_polygon:
                         list_overlapping_yellow_polygon.remove(id1)
                     pass
@@ -188,13 +139,10 @@ if __name__ == '__main__':
                 pass
             list_overlapping_all.clear()
             pass
-
-            # 清空list
             list_bboxs.clear()
 
             pass
         else:
-            # 如果图像中没有任何的bbox，则清空list
             list_overlapping_blue_polygon.clear()
             list_overlapping_yellow_polygon.clear()
             pass
@@ -209,9 +157,34 @@ if __name__ == '__main__':
 
         cv2.imshow('demo', output_image_frame)
         cv2.waitKey(1)
-
         pass
     pass
 
     capture.release()
     cv2.destroyAllWindows()
+
+def worker(incQ: Queue, decQ: Queue, parkinglotID)->None:
+    while True:
+        if not incQ.empty():
+            inc(parkinglotID)
+            incQ.get()
+        if not decQ.empty():
+            dec(parkinglotID)
+            decQ.get()
+        time.sleep(2)
+
+if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        print("[ERROR] Not enough arguments, please call with parking lot id")
+        sys.exit(0)
+    else:
+        parkinglotID = sys.argv[1]
+
+    incQ : Queue = Queue()
+    decQ : Queue = Queue()
+
+    detectionProcess = Process(target=detection, args=(incQ, decQ, ))
+    workerProcess = Process(target=worker, args=(incQ, decQ, parkinglotID, ))
+
+    detectionProcess.start()
+    workerProcess.start()
