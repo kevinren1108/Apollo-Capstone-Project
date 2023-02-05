@@ -62,7 +62,7 @@ def detection(incQ: Queue, decQ: Queue)->None:
     draw_text_postion = (int(960 * 0.01), int(540 * 0.05))
     detector = Detector()
 
-    capture = cv2.VideoCapture('./video/test2.mp4')
+    capture = cv2.VideoCapture('./video/test.mp4')
 
     while True:
         _, im = capture.read()
