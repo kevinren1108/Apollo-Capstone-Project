@@ -286,24 +286,24 @@ function Map() {
 
       console.log(`Parking lot ${updateIndex} update, JSON: ${body}`)
 
-      // const request = new Request('https://ezparking114514.com:9195/updatePLwp', 
-      // {
-      //   method: 'POST',
-      //   body: body,
-      //   headers: new Headers({'Content-Type': 'application/json' }),
-      // });
-      // fetch(request).then(response => 
-      //   {
-      //     if (response.status < 200 || response.status >= 300) {
-      //       console.log(`Update fail with ${response.statusText} as reason`);
-      //     }
-      //     return response.json();
-      //   }).then(response => {
-      //       console.log(`Way point ${updateIndex} is Update`)
-      //   }).catch(() => {
-      //       throw new Error('Login fail, Check your username and password')
-      //   }
-      // );
+      const request = new Request('https://ezparking114514.com:9195/updatePLwp', 
+      {
+        method: 'POST',
+        body: body,
+        headers: new Headers({'Content-Type': 'application/json' }),
+      });
+      fetch(request).then(response => 
+        {
+          if (response.status < 200 || response.status >= 300) {
+            console.log(`Update fail with ${response.statusText} as reason`);
+          }
+          return response.json();
+        }).then(response => {
+            console.log(`Way point ${updateIndex} is Update`)
+        }).catch(() => {
+            throw new Error('Login fail, Check your username and password')
+        }
+      );
     }
  
     else if (updateType == "Destination") {
@@ -316,24 +316,24 @@ function Map() {
 
       console.log(`destinationName ${updateIndex} update, JSON: ${body}`)
 
-      // const request = new Request('https://ezparking114514.com:9195/updateDNwp', 
-      // {
-      //   method: 'POST',
-      //   body: body,
-      //   headers: new Headers({'Content-Type': 'application/json' }),
-      // });
-      // fetch(request).then(response => 
-      //   {
-      //     if (response.status < 200 || response.status >= 300) {
-      //       console.log(`Update fail with ${response.statusText} as reason`);
-      //     }
-      //     return response.json();
-      //   }).then(response => {
-      //       console.log(`Way point ${updateIndex} is Update`)
-      //   }).catch(() => {
-      //       throw new Error('Login fail, Check your username and password')
-      //   }
-      // );
+      const request = new Request('https://ezparking114514.com:9195/updateDNwp', 
+      {
+        method: 'POST',
+        body: body,
+        headers: new Headers({'Content-Type': 'application/json' }),
+      });
+      fetch(request).then(response => 
+        {
+          if (response.status < 200 || response.status >= 300) {
+            console.log(`Update fail with ${response.statusText} as reason`);
+          }
+          return response.json();
+        }).then(response => {
+            console.log(`Way point ${updateIndex} is Update`)
+        }).catch(() => {
+            throw new Error('Login fail, Check your username and password')
+        }
+      );
 
     }
     
@@ -516,7 +516,6 @@ function Map() {
       
       {/* new marker  */}
       {mapMarkerList.clickLog.map((marker, index) => {
-        
         const position = { lat: Number(marker[0]), lng: Number(marker[1] * 1) };
         if(index >= prevLength ){
           return (
