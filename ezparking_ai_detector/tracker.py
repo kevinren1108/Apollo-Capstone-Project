@@ -24,7 +24,7 @@ def draw_bboxes(image, bboxes, line_thickness):
     for (x1, y1, x2, y2, cls_id, pos_id) in bboxes:
         color = (0, 255, 0)
 
-        # 撞线的点
+
         check_point_x = x1
         check_point_y = int(y1 + ((y2 - y1) * 0.6))
 
@@ -87,41 +87,32 @@ def update(bboxes, image):
 
 
 def search_label(center_x, center_y, bboxes_xyxy, max_dist_threshold):
-    """
-    在 yolov5 的 bbox 中搜索中心点最接近的label
-    :param center_x:
-    :param center_y:
-    :param bboxes_xyxy:
-    :param max_dist_threshold:
-    :return: 字符串
-    """
+
     label = ''
-    # min_label = ''
+
     min_dist = -1.0
 
     for x1, y1, x2, y2, lbl, conf in bboxes_xyxy:
         center_x2 = (x1 + x2) * 0.5
         center_y2 = (y1 + y2) * 0.5
 
-        # 横纵距离都小于 max_dist
         min_x = abs(center_x2 - center_x)
         min_y = abs(center_y2 - center_y)
 
         if min_x < max_dist_threshold and min_y < max_dist_threshold:
-            # 距离阈值，判断是否在允许误差范围内
-            # 取 x, y 方向上的距离平均值
+
             avg_dist = (min_x + min_y) * 0.5
             if min_dist == -1.0:
-                # 第一次赋值
+
                 min_dist = avg_dist
-                # 赋值label
+
                 label = lbl
                 pass
             else:
-                # 若不是第一次，则距离小的优先
+
                 if avg_dist < min_dist:
                     min_dist = avg_dist
-                    # label
+
                     label = lbl
                 pass
             pass
