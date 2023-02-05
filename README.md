@@ -41,7 +41,9 @@ Driving is one of the preferred means of transportation for modern people, and v
 
 ## How to use
 [Ezparking webadmin run locally](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/ezparking_frontend/README.md)
+
 [Ezparking AI detector run locally](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/ezparking_ai_detector/README.md)
+
 ## Milestone based project management
 ![milestone](https://user-images.githubusercontent.com/6381488/205513873-ba5cd052-c25d-490a-8e16-d6d20395b0af.PNG)
 
