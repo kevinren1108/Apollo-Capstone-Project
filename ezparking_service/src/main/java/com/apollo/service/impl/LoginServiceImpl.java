@@ -31,7 +31,7 @@ public class LoginServiceImpl implements LoginService {
         UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(user.getName(),user.getPassword());
         System.out.println(authenticationToken);
         Authentication authenticate= authenticationManager.authenticate(authenticationToken);
-        System.out.println("hahahahahahaaha");
+
         if(Objects.isNull(authenticate)){
             throw new RuntimeException("user name or password is wrong");
 

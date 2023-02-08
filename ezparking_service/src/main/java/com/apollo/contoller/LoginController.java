@@ -6,13 +6,11 @@ import com.apollo.pojo.enity.User;
 import com.apollo.service.LoginService;
 import com.apollo.service.userService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.fasterxml.jackson.databind.deser.std.StdNodeBasedDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 import java.util.regex.Pattern;
@@ -28,8 +26,8 @@ public class LoginController {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    @GetMapping("/login")
-
+    @PostMapping("/login")
+    @ResponseBody
     public ResponseResult login(@RequestBody User user){
         System.out.println("i am "+ user.getName());
    //User user1=new User((long)1,"1","1","1");
@@ -48,12 +46,15 @@ public class LoginController {
         if(userMapper.selectCount(queryWrapper)>0){
             return ResponseResult.errorResult(400,"The user name has been registered. ");
         }
+
      //邮箱格式验证
         String REGEX="^\\w+((-\\w+)|(\\.\\w+))*@\\w+(\\.\\w{2,3}){1,3}$";
          boolean checkEmail=  Pattern.matches(REGEX, user.getEmail());
+
          if (checkEmail==false){return ResponseResult.errorResult(400,"Incorrect email format");}
          user.setPassword( passwordEncoder.encode(user.getPassword()));
          userService.save(user);
+
         return ResponseResult.okResult(200,"registered successfully");
     }
 

@@ -73,6 +73,17 @@
             </plugin>
         </plugins>
 
+        <resources>
+            <resource>
+                <!-- 防止JKS被maven错误解析 -->
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+
+
+
+
     </build>
 
 </project>
