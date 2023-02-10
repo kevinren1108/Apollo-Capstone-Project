@@ -7,25 +7,28 @@ import {useSelector, useDispatch} from 'react-redux'
 
 import { updateParkingLot } from '../../store/redirectSlice'
 
-function ParkingListCard() {
+function ParkingListCard(props) {
     const dispatch = useDispatch()
-    const dropdownSelection = useSelector((state) => state.redirect.dropdownSelect)
+    const dropdownSelection = useSelector((state) => state.redirect.dropdownSelectName)
+    const re = /\d+/;
+    const lotNum=re.exec(props.parkingLotName)[0]
+
     return (     
-    <div className="mb-auto h-10">
-    <div className='bg-blue-300 mx-2 my-2 rounded-md '>
-        <div className='mx-10 font-bold ... text-lg text-yellow-300'  >To reach {dropdownSelection}</div>
-    <div onClick={() => dispatch(updateParkingLot("Zone Z"))} className="  rounded-md flex justify-evenly" >
-      <div className=" py-2">
+    <div className='my-2 rounded-md'>
+    <div className='bg-blue-300 mx-2 rounded-md '>
+        <div className='mx-4 font-bold ... text-lg text-yellow-300'  >To reach {dropdownSelection}</div>
+    <div onClick={() => dispatch(updateParkingLot(props.parkingLotName))} className="  rounded-md flex justify-evenly" >
+      <div className=" py-1">
         <div className=" text-center text-6xl text-white">
-          10
+          {lotNum}
         </div>
         <div className="text-bottom font-semibold ... text-base text-white">
           Parking Lot 
         </div>
       </div>
-      <div className=" py-2 text-white">
+      <div className=" py-1 text-white">
         <div className=" text-center text-6xl">
-          3
+          {props.avaSpot}
         </div>
         <div className="text-bottom font-semibold ... text-base text-white">
           Avaiable Spot 

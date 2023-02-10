@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-  dropdownSelect: "Choose Your Destination",
+  dropdownSelectName: "Choose Your Destination",
+  dropdownSelectID:"",
   destinationSelect: "",
 }
 
@@ -10,7 +11,9 @@ export const redirectSlice = createSlice({
   initialState,
   reducers: {
     updateDropdown: (state, action) => {
-      state.dropdownSelect = action.payload
+      const { name,id } = action.payload;
+      state.dropdownSelectName = name
+      state.dropdownSelectID = id
     },
     updateParkingLot: (state, action) => {
       state.destinationSelect = action.payload
