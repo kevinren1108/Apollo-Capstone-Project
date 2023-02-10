@@ -16,7 +16,6 @@ function ParkingListCard(props) {
     return (     
     <div className='my-2 rounded-md'>
     <div className='bg-blue-300 mx-2 rounded-md '>
-        <div className='mx-4 font-bold ... text-lg text-yellow-300'  >To reach {dropdownSelection}</div>
     <div onClick={() => dispatch(updateParkingLot(props.parkingLotName))} className="  rounded-md flex justify-evenly" >
       <div className=" py-1">
         <div className=" text-center text-6xl text-white">
