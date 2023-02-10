@@ -12,16 +12,21 @@ export const redirectSlice = createSlice({
   reducers: {
     updateDropdown: (state, action) => {
       const { name,id } = action.payload;
-      state.dropdownSelectName = name
-      state.dropdownSelectID = id
+      state.dropdownSelectName = name;
+      state.dropdownSelectID = id;
     },
     updateParkingLot: (state, action) => {
       state.destinationSelect = action.payload
+    },
+    resetState: (state) => {
+      state.dropdownSelectName = "Choose Your Destination";
+      state.dropdownSelectID = "" ;
+      state.destinationSelect="";
     },
   },
 })
 
 // Action creators are generated for each case reducer function
-export const { updateDropdown, updateParkingLot } = redirectSlice.actions
+export const { updateDropdown, updateParkingLot,resetState } = redirectSlice.actions
 
 export default redirectSlice.reducer
