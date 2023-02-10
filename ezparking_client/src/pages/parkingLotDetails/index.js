@@ -4,11 +4,12 @@ import {faMap,faPersonWalking,faPersonRunning} from "@fortawesome/free-solid-svg
 import {useSelector} from 'react-redux'
 import {useEffect,useState} from 'react'
 import axios from 'axios'
-
+import DestinationHeader from '../../components/destinationHeader';
 
 
 function ParkingLotDetails(props) {
   const dropdownSelectionID = useSelector((state) => state.redirect.dropdownSelectID)
+  const dropdownSelectionName = useSelector((state) => state.redirect.dropdownSelectName)
   const [result, setResult] = useState([])
   const detailAPI=axios.create({ baseURL :'https://ezparking114514.com:9195/getPath'})
   const walkingSpeed=1.3
@@ -42,6 +43,8 @@ function ParkingLotDetails(props) {
   }
   destURL="https://www.google.com/maps/dir/?api=1&travelmode=driving&layer=traffic&destination="+lat+",%20"+lng
     return (     
+      <div className="mb-auto" >
+        <DestinationHeader destination={dropdownSelectionName}/>
     <div className="mb-auto h-10">
     <div className='bg-blue-300 mx-2 my-2 rounded-md '>
         <div className='mx-4 font-bold ... text-lg text-yellow-300'  >Parking at {parkingLotSelect}</div>
@@ -66,6 +69,7 @@ function ParkingLotDetails(props) {
       </div>
     </div>
     </div>
+  </div>
   </div> );
 }
 
