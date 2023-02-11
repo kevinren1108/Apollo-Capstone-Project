@@ -1,8 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit'
-import homeSlice from '../pages/home/store/homeSlice'
+import redirectReducer from './redirectSlice'
 
-export default configureStore({
+export const store = configureStore({
   reducer: {
-    home: homeSlice
+    redirect: redirectReducer,
   },
 })
+
