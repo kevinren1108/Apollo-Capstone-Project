@@ -1,6 +1,16 @@
 # Team Apollo Capstone Project
 Driving is one of the preferred means of transportation for modern people, and vehicles have brought people a lot of convenience. At the same time, finding a parking space is also a problem that every driver must face. A suitable parking space near the destination is very important for people, it can shorten the walking time for users to reach the destination. Therefore, it is necessary to have software that can query the nearest suitable parking space for the user. It saves the user time to find a parking space and avoids unnecessary walking distance for the user.
 
+## How to use
+[Ezparking myAdmin run locally](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/ezparking_frontend/README.md)
+OR CHECKOUT OUR [Live Demo](https://singular-malabi-a5e23d.netlify.app)
+
+[Ezparking Client run locally](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/ezparking_client/README.md)
+OR CHECKOUT OUR [Live Demo](https://urezparking.com/)
+
+[Ezparking AI detector run locally](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/ezparking_ai_detector/README.md)
+
+
 ## Project vlogs
 [Project vlog video #1](https://youtu.be/MFvi8rMCnk8)
 
@@ -40,11 +50,6 @@ Driving is one of the preferred means of transportation for modern people, and v
 [Hifi Design](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/design/hifi%20design.pdf)
 
 [Logo Design](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/design/logo.png)
-
-## How to use
-[Ezparking webadmin run locally](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/ezparking_frontend/README.md)
-
-[Ezparking AI detector run locally](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/ezparking_ai_detector/README.md)
 
 ## Milestone based project management
 ![milestone](https://user-images.githubusercontent.com/6381488/205513873-ba5cd052-c25d-490a-8e16-d6d20395b0af.PNG)
