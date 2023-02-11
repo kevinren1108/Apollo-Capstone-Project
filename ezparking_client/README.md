@@ -1,4 +1,4 @@
-# EZparking Client APP(EzParking Myadmin)
+# EZparking Client APP
 
 This is This is a user system to provide the simplest and most direct operation to help users choose the best parking area.
 
