@@ -6,4 +6,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 public interface LoginService {
     ResponseResult login(User user);
+
 }
