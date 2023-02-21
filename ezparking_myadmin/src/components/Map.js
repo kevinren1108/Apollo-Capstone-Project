@@ -8,7 +8,7 @@ import {
   Polyline,
 } from '@react-google-maps/api';
 import { useSelector, useDispatch } from 'react-redux';
-import { mapClickAdd, markerClick, generateData, waypointUpdate } from '../store/mapClickSlice';
+import { mapClickAdd, mapClickMinus, markerClick, generateData, waypointUpdate } from '../store/mapClickSlice';
 import { updateVehicleCount, updateParkingLotsCount, updateTotalParkingSpotCount, updateInUseCount } from '../store/parkingStatusSlice';
 import "./map.css"
 import Graph from '../structure/graph';
@@ -279,9 +279,9 @@ function Map() {
       let parkingLotName = prompt("Please Entry Parking LotName")
 
       const body = JSON.stringify({
-        index: updateIndex.toString(),
-        newName: parkingLotName,
-        newAmount: parkingLotSpots
+        id: updateIndex.toString(),
+        amount: parkingLotSpots,
+        name: parkingLotName 
       })
 
       console.log(`Parking lot ${updateIndex} update, JSON: ${body}`)
@@ -299,7 +299,8 @@ function Map() {
           }
           return response.json();
         }).then(response => {
-            console.log(`Way point ${updateIndex} is Update`)
+            alert(`Way point ${deleteIndex} is Update`)
+            location.reload()
         }).catch(() => {
             throw new Error('Login fail, Check your username and password')
         }
@@ -310,8 +311,8 @@ function Map() {
       let destinationName = prompt("Please Entry Destination Name")
 
       const body = JSON.stringify({
-        index: updateIndex.toString(),
-        newName: destinationName
+        id: updateIndex.toString(),
+        name: destinationName
       })
 
       console.log(`destinationName ${updateIndex} update, JSON: ${body}`)
@@ -329,7 +330,8 @@ function Map() {
           }
           return response.json();
         }).then(response => {
-            console.log(`Way point ${updateIndex} is Update`)
+            alert(`Way point ${deleteIndex} is Update`)
+            location.reload()
         }).catch(() => {
             throw new Error('Login fail, Check your username and password')
         }
@@ -354,15 +356,24 @@ function Map() {
 
     if (label == "Parking lot") {
       let parkingLotSpots = prompt("Please Entry Avaiable Spots")
+      while(isNaN(parkingLotSpots) || parkingLotSpots <= 0){
+        parkingLotSpots = prompt("Invalid Input, Please Entry Avaiable Spots Again")
+      }
       label += `(Avaiable Spots: ${parkingLotSpots})`
 
       dispatch(updateParkingLotsCount(1))
       dispatch(updateTotalParkingSpotCount(parseInt(parkingLotSpots)))
       let parkingLotName = prompt("Please Entry Parking LotName")
+      while(parkingLotName === "" || /^\s/.test(parkingLotName)){
+        parkingLotName = prompt("Invalid Input, Please Entry Parking LotName Again")
+      }
       label += `(Parkinglot Name: ${parkingLotName})`
     }
     if (label == "Destination") {
       let pestinationName = prompt("Please Entry Destination Name")
+      while(pestinationName === "" || /^\s/.test(pestinationName)){
+        pestinationName = prompt("Invalid Input, Please Entry Destination Name Again")
+      }
       label += `(Destination Name: ${pestinationName})`
     }
     setIsOpen(false)
@@ -374,27 +385,29 @@ function Map() {
 
   const deleteWaypoint = (deleteIndex) => {
     const body = JSON.stringify({"name": deleteIndex.toString() })
-    console.log(`Delete index: ${deleteIndex}, JSON: ${body}`)
+    console.log(`Delete index: ${deleteIndex}, Requset body JSON: ${body}`)
    
 
-    // const request = new Request('https://ezparking114514.com:9195/deleteWP', 
-    // {
-    //   method: 'POST',
-    //   body: body,
-    //   headers: new Headers({'Content-Type': 'application/json' }),
-    // });
-    // fetch(request).then(response => 
-    //   {
-    //     if (response.status < 200 || response.status >= 300) {
-    //       console.log(`Delete fail with ${response.statusText} as reason`);
-    //     }
-    //     return response.json();
-    //   }).then(response => {
-    //       console.log(`Way point ${deleteIndex} is deleted`)
-    //   }).catch(() => {
-    //       throw new Error('Login fail, Check your username and password')
-    //   }
-    // );
+    const request = new Request('https://ezparking114514.com:9195/deleteWp', 
+    {
+      method: 'POST',
+      body: body,
+      headers: new Headers({'Content-Type': 'application/json' }),
+    });
+    fetch(request).then(response => 
+      {
+        console.log("The API respones is: ", response)
+        if (response.status < 200 || response.status >= 300) {
+          console.log(`Delete fail with ${response.statusText} as reason`);
+        }
+        return response.json();
+      }).then(response => {
+          alert(`Way point ${deleteIndex} is deleted`)
+          location.reload()
+      }).catch(() => {
+          throw new Error('Login fail, Check your username and password')
+      }
+    );
   }
 
   
@@ -433,6 +446,7 @@ function Map() {
   const changeCloseClick = (e) => {
 
     setIsOpen(false)
+    dispatch(mapClickMinus());
   };
   const selectOption = [
     {
