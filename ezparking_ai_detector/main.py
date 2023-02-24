@@ -12,14 +12,14 @@ import sys
 def request_task_inc(parkinglotID):
     print("inc start")
     startTime = time.perf_counter()
-    urllib.request.urlopen('https://ezparking114514.com:9195/countUp?Parkinglot=' + parkinglotID)
+    urllib.request.urlopen('https://ezparking114514.com:9195/countUp?parkingLot=' + parkinglotID)
     endTime = time.perf_counter()
     print("inc end, time: ", endTime-startTime)
 
 def request_task_dec(parkinglotID):
     print("dec start")
     startTime = time.perf_counter()
-    urllib.request.urlopen('https://ezparking114514.com:9195/countDown?Parkinglot=' + parkinglotID)
+    urllib.request.urlopen('https://ezparking114514.com:9195/countDown?parkingLot=' + parkinglotID)
     endTime = time.perf_counter()
     print("inc end, time: ", endTime-startTime)
 
@@ -91,9 +91,7 @@ def detection(incQ: Queue, decQ: Queue)->None:
                     pass
                     if track_id in list_overlapping_yellow_polygon:
                         decQ.put(1)
-                        # dec()
-                        #通过对后台发送request调整后台数据-1
-                        # resp = urllib.request.urlopen('https://ezparking114514.com:9195/countDown')  
+                       
                         print(f'Type: {label} | id: {track_id} | going up | going up total: {up_count} | all going up : {list_overlapping_yellow_polygon}')
                         list_overlapping_yellow_polygon.remove(track_id)
                         pass
@@ -106,8 +104,7 @@ def detection(incQ: Queue, decQ: Queue)->None:
                     pass
                     if track_id in list_overlapping_blue_polygon:
                         incQ.put(1)
-                        # inc()
-                        # resp = urllib.request.urlopen('https://ezparking114514.com:9195/countUp')                      
+                                         
                         print(f'Type: {label} | id: {track_id} | going down | going down total: {down_count} | all going down : {list_overlapping_blue_polygon}')
                         list_overlapping_blue_polygon.remove(track_id)
                         pass
@@ -148,12 +145,12 @@ def detection(incQ: Queue, decQ: Queue)->None:
             pass
         pass
 
-        text_draw = 'DOWN: ' + str(down_count) + \
-                    ' , UP: ' + str(up_count)
-        output_image_frame = cv2.putText(img=output_image_frame, text=text_draw,
-                                         org=draw_text_postion,
-                                         fontFace=font_draw_number,
-                                         fontScale=1, color=(255, 255, 255), thickness=2)
+#        text_draw = 'DOWN: ' + str(down_count) + \
+#                    ' , UP: ' + str(up_count)
+#        output_image_frame = cv2.putText(img=output_image_frame, text=text_draw,
+#                                         org=draw_text_postion,
+#                                        fontFace=font_draw_number,
+#                                         fontScale=1, color=(255, 255, 255), thickness=2)
 
         cv2.imshow('demo', output_image_frame)
         cv2.waitKey(1)
