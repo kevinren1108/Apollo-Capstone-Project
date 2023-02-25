@@ -30,6 +30,7 @@
 
 ## 2.Interface definition：
 ### 2.1 login API
+* method:POST
 * API introduce : login
 * API address: /login
 ### 2.1.1 required parameter
@@ -64,6 +65,9 @@
 }
 
 ### 2.2 insert API
+
+### 2.2.1
+* method:Request
 * API introduce : insert waypoiny
 * API address: /insertWP
 
@@ -86,6 +90,7 @@
     "msg": "way point is empty."
 }
 ### 2.3 load API
+* method:Request
 * API introduce : load waypoiny
 * API address: /loadWP
 
@@ -111,6 +116,7 @@
         }
 
   ### 2.4 update waypoint API
+  * method:Request
 * API introduce : update waypoiny
 * API address: /updateWP
 
@@ -132,13 +138,14 @@
             "type": "Way point"
         }
 
- ### 2.4.1 Returning the results
+ ### 2.4.2 Returning the results
  Example: {
     "code": 200,
     "msg": "ok."
 }
 
 ### 2.5 add count API
+* method:Request
 * API introduce : Increase the number of cars in the parking lot
 * API address: /countUp
 
@@ -158,6 +165,7 @@ Example:{
 }
 
 ### 2.6 decline count API
+* method:Request
 * API introduce : Increase the number of cars in the parking lot
 * API address: /countDown
 
@@ -176,6 +184,7 @@ Example:{
     "msg": "ok"
 }
 ### 2.7 query amount API
+* method:Request
 * API introduce : Check the number of cars in the parking lot
 * API address: /queryCount
 
@@ -194,6 +203,7 @@ Example:{
 }
 
 ### 2.8 delete waypoint API
+* method:Request
 * API introduce : delete way point
 * API address: /deleteWp
 
@@ -219,6 +229,7 @@ Example:{
 
 
 ### 2.9 updateDNwp waypoint API
+* method:Request
 * API introduce : updateDNwp information about waypoint
 * API address: /updateDNwp
 
@@ -246,6 +257,7 @@ Example:{
 }
 
 ### 2.10 updatePLwp  API
+* method:Request
 * API introduce : update of the parkingLot
 * API address: /updatePLwp
 
@@ -262,7 +274,7 @@ Example:{
             
         }
 
-### 2.9.1 Returning the results
+### 2.10.1 Returning the results
 |  parameter   | type  |description  |
 |  ----  | ----  |----  |
 | code  | String | Response code |
