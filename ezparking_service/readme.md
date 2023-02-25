@@ -68,7 +68,7 @@
 * method:Request
 * API introduce : insert waypoiny
 * API address: /insertWP
-### 2.2.1
+### 2.2.1 required parameter
 
 |  parameter   | type  |description  |
 |  ----  | ----  |----  |
