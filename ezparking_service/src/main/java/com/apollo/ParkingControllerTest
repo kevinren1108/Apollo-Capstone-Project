@@ -1,0 +1,119 @@
+
+package com.apollo.contoller;
+
+import com.apollo.mapper.DestinationAndParkingMapper;
+import com.apollo.mapper.amountMapper;
+import com.apollo.mapper.pathanddisMapper;
+import com.apollo.mapper.pointWayMapper;
+import com.apollo.pojo.ResponseResult;
+import com.apollo.pojo.enity.StartEnd;
+import com.apollo.pojo.enity.pathAndDis;
+import com.apollo.pojo.enity.pointWay;
+import com.apollo.pojo.enity.uploadPL;
+import com.apollo.service.DestinationAndParkingService;
+import com.apollo.service.pathAndDisService;
+import com.apollo.service.pointWayService;
+import com.apollo.service.userService;
+import com.apollo.util.RedisCache;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.mockito.Mockito.*;
+
+public class ParkingControllerTest {
+    @Mock
+    com.apollo.mapper.amountMapper amountMapper;
+    @Mock
+    com.apollo.mapper.pathanddisMapper pathanddisMapper;
+    @Mock
+    com.apollo.service.pathAndDisService pathAndDisService;
+    @Mock
+    com.apollo.service.userService userService;
+    @Mock
+    RedisCache redisCache;
+    @Mock
+    com.apollo.service.pointWayService pointWayService;
+    @Mock
+    com.apollo.mapper.pointWayMapper pointWayMapper;
+    @Mock
+    DestinationAndParkingMapper destinationAndParkingMapper;
+    @Mock
+    DestinationAndParkingService destinationAndParkingService;
+    @InjectMocks
+    ParkingController parkingController;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testGetTotalLot() throws Exception {
+        ResponseResult result = parkingController.getTotalLot();
+        Assert.assertEquals(new ResponseResult(200, "ok", 300), result);
+    }
+
+
+
+    @Test
+    public void testDelete() throws Exception {
+        ResponseResult result = parkingController.delete(new pointWay("2", new BigDecimal(0), new BigDecimal(0), "type", "neighbor"));
+        Assert.assertEquals(new ResponseResult(200, "ok"), result);
+    }
+
+
+
+    @Test
+    public void testAddall() throws Exception {
+        ResponseResult result = parkingController.addall(Arrays.<pointWay>asList(new pointWay("name", new BigDecimal(0), new BigDecimal(0), "type", "neighbor")));
+        Assert.assertEquals(new ResponseResult(Integer.valueOf(0), "ok"), result);
+    }
+
+    @Test
+    public void testUpdatePLwp() throws Exception {
+        ResponseResult result = parkingController.updatePLwp(new uploadPL("1", "WayPoint", 99));
+        Assert.assertEquals(new ResponseResult(200, "ok"), result);
+    }
+
+    @Test
+    public void testUpdateDNwp() throws Exception {
+        ResponseResult result = parkingController.updateDNwp(new uploadPL("6", "CW", 0));
+        Assert.assertEquals(new ResponseResult(200, "ok"), result);
+    }
+
+
+
+
+
+    @Test
+    public void testGetAllDestination() throws Exception {
+        ResponseResult result = parkingController.getAllDestination();
+        Assert.assertEquals(new ResponseResult(200, "ok", pointWay.class), result);
+    }
+
+
+
+    @Test
+    public void testDis() throws Exception {
+        ResponseResult result = parkingController.dis(Arrays.<pathAndDis>asList(new pathAndDis("start", "end", 0d)));
+        Assert.assertEquals(new ResponseResult(Integer.valueOf(0), "ok"), result);
+    }
+
+    @Test
+    public void testTest() throws Exception {
+        when(pointWayService.getDistance(any())).thenReturn(Double.valueOf(0));
+
+        ResponseResult result = parkingController.test(new StartEnd("startPoint", "endPoint"));
+        Assert.assertEquals(new ResponseResult(200, "ok"), result);
+    }
+}
+
+//Generated with love by TestMe :) Please report issues and submit feature requests at: http://weirddev.com/forum#!/testme
