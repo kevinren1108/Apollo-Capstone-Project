@@ -18,6 +18,10 @@ const mapClickSlice = createSlice({
       state.clickId = state.clickLog.length - 1
       state.currentLog = [lat,lng]
     },
+    mapClickMinus(state, action){
+      state.clickLog.pop();
+      state.clickId = state.clickLog.length + 1;
+    },
     markerClick(state,action) {
       const { lat, lng,id } = action.payload;
       state.currentLog = [lat,lng]
@@ -34,5 +38,5 @@ const mapClickSlice = createSlice({
   },
 });
 
-export const { mapClickAdd,markerClick,generateData, waypointUpdate } = mapClickSlice.actions;
+export const { mapClickAdd,mapClickMinus,markerClick,generateData, waypointUpdate } = mapClickSlice.actions;
 export default mapClickSlice.reducer;

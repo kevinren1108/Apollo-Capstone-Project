@@ -18,25 +18,18 @@ function CoordinateForm() {
     dispatch(editWaypointClick(2));
   };
 
-  let parkLotBtnStyle = '';
-  let waypointBtnStyle = '';
-  if (editMenuState.editSelected == 1) {
-    parkLotBtnStyle =
-      'bg-white ring rounded-lg text-blue-700 px-1 py-10 my-5 text-center';
-    waypointBtnStyle =
-      'bg-white drop-shadow rounded-lg text-black-700 px-1 py-10  my-5 text-center';
-  } else if (editMenuState.editSelected == 2) {
-    parkLotBtnStyle =
-      'bg-white drop-shadow rounded-lg text-black-700 px-1 py-10  my-5 text-center';
-    waypointBtnStyle =
-      'bg-white ring rounded-lg text-blue-700 px-1 py-10 my-5 text-center';
-  } else {
-    parkLotBtnStyle =
-      'bg-white drop-shadow rounded-lg text-black-700 px-1 py-10  my-5 text-center';
-    waypointBtnStyle =
-      'bg-white drop-shadow rounded-lg text-black-700 px-1 py-10  my-5 text-center';
-  }
+  let sebdReqStyle = 'block mx-auto bg-green-500 drop-shadow rounded-lg text-black px-10 py-2 my-5 text-center';
+  let sebdReqDisableStyle = 'block mx-auto bg-gray-300 drop-shadow rounded-lg text-white px-10 py-2 my-5 text-center';
+  let waypointBtnStyle = 'bg-white drop-shadow rounded-lg text-black-700 px-1 py-10  my-5 text-center';
+  
   const sendReqStyle = {
+    border:'1px solid #ccc',
+    padding:'5px 10px',
+    borderRadius:'5px',
+    margin:'30px auto',
+    display:'block'
+  }
+  const sendReqDisableStyle = {
     border:'1px solid #ccc',
     padding:'5px 10px',
     borderRadius:'5px',
@@ -72,7 +65,14 @@ function CoordinateForm() {
         Edit Waypoints
       </div>
       
-      <button className='sendReq' style={sendReqStyle} onClick={sendReq}>Send Graph</button>
+      
+      <button 
+              className={ JSON.stringify(state.sendData) == '{}'? `${sebdReqDisableStyle}` :`${sebdReqStyle}`} 
+              disabled={JSON.stringify(state.sendData) == '{}'? true : false } 
+              onClick={sendReq}>
+              
+        Send Graph
+      </button>
     </div>
   );
 }
