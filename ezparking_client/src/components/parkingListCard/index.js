@@ -30,7 +30,7 @@ function ParkingListCard(props) {
           {props.avaSpot}
         </div>
         <div className="text-bottom font-semibold ... text-base text-white">
-          Avaiable Spot 
+          Available Spot 
         </div>
       </div>
       </div>
