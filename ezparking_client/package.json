@@ -11,7 +11,6 @@
     "@popperjs/core": "^2.11.6",
     "@reduxjs/toolkit": "^1.9.1",
     "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "bootstrap": "^5.2.3",
     "flowbite": "^1.6.3",
@@ -55,6 +54,10 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/react": "^14.0.0",
+    "jest-dom": "^4.0.0",
+    "react-test": "^0.21.1",
+    "renderer": "^0.1.5",
     "tailwindcss": "^3.2.4"
   }
 }
