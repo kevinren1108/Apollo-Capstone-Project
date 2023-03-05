@@ -27,6 +27,7 @@ OR CHECKOUT OUR [Live Demo](https://urezparking.com/)
 ## Report
 [Vehicle Counting System AI Report](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/ezparking_frontend/README.md)
 
+## Testing
 
 ## Documents
 [Business Case](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/documents/Planning/Business%20Case.pdf)
