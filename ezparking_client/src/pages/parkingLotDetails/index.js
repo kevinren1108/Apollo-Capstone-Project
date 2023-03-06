@@ -1,4 +1,3 @@
-import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {faMap,faPersonWalking,faPersonRunning} from "@fortawesome/free-solid-svg-icons"
 import {useSelector} from 'react-redux'
@@ -27,7 +26,7 @@ function ParkingLotDetails(props) {
   useEffect(() => {
       getList()
 
-      }, []);
+      });
   const parkingLotSelect = useSelector((state) => state.redirect.destinationSelect)
 
   const i = result.findIndex(e => e.parkingLotName === parkingLotSelect);

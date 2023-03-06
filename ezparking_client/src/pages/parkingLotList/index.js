@@ -13,12 +13,9 @@ function ParkingLotList() {
     const res=await detailAPI.post('/',{name:dropdownSelectionID})
     setResult(res.data.data)
     }
-    useEffect(() => {
-        getList()
-  
-        }, []);
+    useEffect(() => {getList()});
     return ( 
-    <div className="mb-auto overflow-y-auto h-2/4 ...">
+    <div className="mb-auto overflow-y-auto h-screen">
         <DestinationHeader destination={dropdownSelectionName}/>
         {
         result.map((result, index) =>{

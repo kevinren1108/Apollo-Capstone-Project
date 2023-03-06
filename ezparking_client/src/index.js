@@ -15,7 +15,7 @@ root.render(
   <React.StrictMode>
     <Provider store={store} >
       <BrowserRouter>
-        <div className="flex flex-col h-screen justify-between">
+        <div className="flex flex-col h-fullToolBar justify-between">
           <PageHeader />
           <Announcement />
             <App/>

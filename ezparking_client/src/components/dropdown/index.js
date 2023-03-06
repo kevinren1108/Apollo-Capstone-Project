@@ -3,13 +3,13 @@ import { Menu, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faHouse} from "@fortawesome/free-solid-svg-icons"
-import {useSelector, useDispatch} from 'react-redux'
+import {useSelector} from 'react-redux'
 import DropdownCard from './DropdownCard'
 import {useState,useEffect} from 'react'
 
 export const Dropdown = (props)=> {
   const dropdownSelection = useSelector((state) => state.redirect.dropdownSelectName)
-  const dispatch = useDispatch()
+  
   const destAPIURL="https://ezparking114514.com:9195/getAllDestination"
     const [result, setResult] = useState([])
   
