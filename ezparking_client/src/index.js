@@ -1,26 +1,26 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import { BrowserRouter } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import { store } from './store'
-import PageHeader from './components/header';
-import PageFooter from './components/footer';
-import Announcement from './components/announcement';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import { BrowserRouter } from "react-router-dom";
+import { Provider } from "react-redux";
+import { store } from "./store";
+import PageHeader from "./components/header";
+import PageFooter from "./components/footer";
+import Announcement from "./components/announcement";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <React.StrictMode>
-    <Provider store={store} >
+    <Provider store={store}>
       <BrowserRouter>
         <div className="flex flex-col h-fullToolBar justify-between">
           <PageHeader />
           <Announcement />
-            <App/>
+          <App />
           <PageFooter />
-        </div> 
+        </div>
       </BrowserRouter>
     </Provider>
   </React.StrictMode>

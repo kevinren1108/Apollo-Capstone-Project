@@ -24,7 +24,7 @@
     "react-dom": "^18.2.0",
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.6.1",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
     "redux": "^4.2.1",
     "sort-by": "^1.2.0",
     "web-vitals": "^2.1.4"
@@ -55,6 +55,7 @@
   },
   "devDependencies": {
     "@testing-library/react": "^14.0.0",
+    "dotenv": "^16.0.3",
     "jest-dom": "^4.0.0",
     "react-test": "^0.21.1",
     "renderer": "^0.1.5",
