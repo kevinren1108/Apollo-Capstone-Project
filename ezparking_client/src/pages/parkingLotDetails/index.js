@@ -71,7 +71,7 @@ function ParkingLotDetails(props) {
           <div className=" flex justify-evenly">
             <a href={destURL} className=" py-2 ">
               <div className="text-center text-6xl relative">
-                <span class="animate-ping absolute top-0 right-0 mr-3 mt-1 rounded-full h-3 w-3 bg-rose-300"></span>
+                <span class="animate-ping absolute top-0 right-0 mr-3 mt-1 rounded-full h-3 w-3 bg-rose-400"></span>
                 <span class="absolute top-0 right-0 mr-3 mt-1 rounded-full h-3 w-3 bg-rose-500"></span>
 
                 <FontAwesomeIcon icon={faMap} color="white " />
