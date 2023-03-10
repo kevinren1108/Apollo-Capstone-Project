@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class ParkingController {
@@ -40,70 +41,127 @@ public class ParkingController {
     @Autowired
     DestinationAndParkingMapper destinationAndParkingMapper;
     @RequestMapping("/insertWP")
-    private ResponseResult savePintWay(@RequestBody Map<String,Object> map){
-        // Delete all records in the database table
-        pointWayMapper.delete(null);
+    private synchronized ResponseResult savePintWay(@RequestBody Map<String,Object> map){
+        if(map == null || map.isEmpty()){
+            return ResponseResult.errorResult(400,"way point is empty.");
+        }
 
-        // Get all keys of the received map object
-        Set<String> keySet = map.keySet();
-
-        // Iterate over all keys
-        for (String key : keySet) {
-            // Get the corresponding map value for each key
-            Map value = (Map) map.get(key);
-            // Convert the properties to the correct data type
+        List<pointWay> pointWays = new ArrayList<>();
+        map.entrySet().stream().forEach(entry -> {
+            Map value = (Map) entry.getValue();
             BigDecimal lat = (BigDecimal) value.get("lat");
-            BigDecimal lng= (BigDecimal) value.get("lng");
-            String type= (String) value.get("type");
-            String neighbor= value.get("neighbor").toString();
-            // Create a new instance of the pointWay class and set its properties
-            pointWay pointWay=new pointWay();
-            pointWay.setName(key);
+            BigDecimal lng = (BigDecimal) value.get("lng");
+            String type = (String) value.get("type");
+            String neighbor = value.get("neighbor").toString();
+            pointWay pointWay = new pointWay();
+            pointWay.setName(entry.getKey());
             pointWay.setType(type);
             pointWay.setLat(lat);
             pointWay.setNeighbor(neighbor);
             pointWay.setLng(lng);
-            // Insert the pointWay instance into the database table
-            pointWayMapper.insert(pointWay);
+            pointWays.add(pointWay);
+        });
+
+        if (pointWays.isEmpty()) {
+            return ResponseResult.errorResult(400, "way point is empty.");
         }
 
-        // Return a success response with a 200 status code and a message "save successfully"
+        // 删除原有数据
+        pointWayMapper.delete(null);
+        pathanddisMapper.delete(null);
+        destinationAndParkingMapper.delete(null);
+
+        // 插入到pointway表
+        pointWays.forEach(item -> {
+            pointWayMapper.insert(item);
+        });
+
+        // 插入到pathanddis表
+        List<pathAndDis> pathAndDis = pointWayService.getPathAndDis();
+        if (!pathAndDis.isEmpty()) {
+            pathAndDis.forEach(item -> {
+                pathanddisMapper.insert(item);
+            });
+        }
+
+        // 插入到destinationandparking表
+        List<DestinationAndParking> destinationAndParkings = pointWayService.getDestinationAndParking();
+        if (!destinationAndParkings.isEmpty()) {
+            destinationAndParkings.forEach(item -> {
+                destinationAndParkingMapper.insert(item);
+            });
+        }
+        List<pointWay> pointWays2 = pointWayMapper.selectList(null);
+        pointWayService.insertAmount(pointWays2);
+
         return ResponseResult.okResult(200,"save successfully");
     }
 
 
-
     @RequestMapping("/loadWP")
     private ResponseResult queryPointway() {
-        // Create a QueryWrapper object
-        QueryWrapper queryWrapper=new QueryWrapper();
-        // Select all records from the pointWay table
-        List<pointWay> list= pointWayMapper.selectList(null);
-        // Create a new list to store updated data
-        List<pointWay> list2=new ArrayList<>();
-        // Iterate over all records
-        for (pointWay item: list){
-            // Query the DestinationAndParking table using the id property of the current pointWay record
-            queryWrapper.eq("id",item.getName());
-            DestinationAndParking destinationAndParking= destinationAndParkingMapper.selectOne(queryWrapper);
-            // If a record is found, update the type property of the current pointWay record
-            String name = null;
-            if (destinationAndParking != null) {
-                name= destinationAndParking.getName();
-                String type=item.getType();
-                int startIndex = type.indexOf("Name:");
-                int endIndex = type.indexOf(")");
-                String targetString = type.substring(0, startIndex + 6) + name+ type.substring(endIndex);
-                item.setType(targetString);
+        QueryWrapper<pointWay> parkingQueryWrapper = new QueryWrapper<>();
+        parkingQueryWrapper.like("type", "Parking");
+        List<pointWay> parkingList = pointWayMapper.selectList(parkingQueryWrapper);
+
+        // 查询包含 Destination 的 pointWay 实体列表
+        QueryWrapper<pointWay> destinationQueryWrapper = new QueryWrapper<>();
+        destinationQueryWrapper.like("type", "Destination");
+        List<pointWay> destinationList = pointWayMapper.selectList(destinationQueryWrapper);
+
+        List<amount> amountList = amountMapper.selectList(null);
+
+        for (pointWay parking : parkingList) {
+            String parkingName = parking.getName();
+            for (amount amount : amountList) {
+                if (parkingName.equals(amount.getName())) {
+                    parking.setType(parking.getType().replaceFirst("Avaiable Spots: \\d+", "Avaiable Spots: " + amount.getAmount()));
+                    for (pointWay destination : destinationList) {
+                        if (destination.getName().equals(amount.getName())) {
+                            destination.setType(destination.getType().replaceFirst("Avaiable Spots: \\d+", "Avaiable Spots: " + amount.getAmount()));
+                            break;
+                        }
+                    }
+                    break;
+                }
             }
-            // Clear the QueryWrapper object
-            queryWrapper.clear();
-            // Add the updated pointWay record to the list
-            list2.add(item);
         }
-        // Return the updated list of pointWay records as the response
-        return ResponseResult.okResult(200,"ok", list);
+
+        List<pointWay> resultList = new ArrayList<>();
+        for (pointWay item:destinationList){
+
+            resultList.add(item);
+        }
+        for (pointWay item:parkingList){
+
+            resultList.add(item);
+        }
+        List<DestinationAndParking>destinationAndParkings=destinationAndParkingMapper.selectList(null);
+
+    for (DestinationAndParking item:destinationAndParkings){
+        for (pointWay pointWay: resultList){
+            if (item.getId().equals(pointWay.getName())){
+                String destination =pointWay.getType();
+                int nameIndex = destination.indexOf("Name: ") + 6;
+                int closeIndex = destination.indexOf(")", nameIndex);
+                String newName = item.getName();
+                String newDestination = destination.substring(0, nameIndex) + newName + destination.substring(closeIndex);
+                pointWay.setType(newDestination);
+            }
+
+        }
+
+    }QueryWrapper<pointWay> parkingQueryWrapper3 = new QueryWrapper<>();
+        parkingQueryWrapper3.like("type", "Way point");
+        List<pointWay> wayList = pointWayMapper.selectList(parkingQueryWrapper3);
+        for (pointWay item:wayList){
+            resultList.add(item);
+        }
+
+        return ResponseResult.okResult(200, "ok", resultList);
     }
+
+
 
     @RequestMapping("/updateWP")
     private  ResponseResult updatePointWay(@RequestBody pointWay pointWay){
@@ -168,23 +226,27 @@ public class ParkingController {
      */
     @RequestMapping("/countDown")
     private ResponseResult countDown(@Param("parkingLot") String parkingLot) {
-        // Create query wrapper to select the parking lot by name
+        // 判断停车场是否存在
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("name", parkingLot);
-        // Select the parking lot details
         amount amount = amountMapper.selectOne(queryWrapper);
-        System.out.println(amount);
+        if (amount == null) {
+            return ResponseResult.errorResult(400, "The parking lot does not exist");
+        }
+
+        // 判断停车场是否已满
         int exist = amount.getExist();
-        if (exist > 0) {
-            amount.setExist(exist - 1);
-            // Create update wrapper to update the decremented exist count
-            UpdateWrapper updateWrapper = new UpdateWrapper();
-            updateWrapper.eq("name", amount.getName());
-            amountMapper.update(amount, updateWrapper);
-            return ResponseResult.okResult(200, "ok");
-        } else {
+        if (exist <= 0) {
             return ResponseResult.errorResult(400, "The parking lot is full");
         }
+
+        // 更新停车场空余车位数量
+        amount.setExist(exist - 1);
+        UpdateWrapper updateWrapper = new UpdateWrapper();
+        updateWrapper.eq("name", amount.getName());
+        amountMapper.update(amount, updateWrapper);
+
+        return ResponseResult.okResult(200, "Countdown success");
     }
 
     /**
@@ -205,68 +267,68 @@ public class ParkingController {
     }
 
 
-@RequestMapping("/savePath")
+    @RequestMapping("/savePath")
 //获得子节点的值。
 //得到所有的点存入list
     private  ResponseResult savePath() {
-    int currentStatus = 4;
-    List<String> path = new ArrayList<>();
-    List<String> list2 = new ArrayList<>();
-    List<pointWay> list = pointWayMapper.selectList(null);
-    System.out.println("this is list   :" + list);
-    Set<String> visited = new HashSet<>();
+        int currentStatus = 4;
+        List<String> path = new ArrayList<>();
+        List<String> list2 = new ArrayList<>();
+        List<pointWay> list = pointWayMapper.selectList(null);
+        System.out.println("this is list   :" + list);
+        Set<String> visited = new HashSet<>();
 
-    System.out.println("dfdfdf" + visited.contains(2));
+        System.out.println("dfdfdf" + visited.contains(2));
 
 //得到现在状态的经纬度，子节点。
-    String str = list.get(currentStatus).getNeighbor();
+        String str = list.get(currentStatus).getNeighbor();
 //判断子节点是否存在于set中 ，如果是TRUE就删除，如果是FALSE就存入list2
-    String[] array = str.substring(1, str.length() - 1).split(",");
-    for (String element : array) {
-        if (visited.contains(element) == false) {
-            list2.add(element);
-        }
-    }
-    //得到 list 元素的 index。
-    List<Integer> result = new ArrayList<>();
-    for (int i = 0; i < list2.size(); i++) {
-        for (int j = 0; j < list.size(); j++) {
-            if (list.get(j).getName().equals(list2.get(i))) {
-                result.add(j);
+        String[] array = str.substring(1, str.length() - 1).split(",");
+        for (String element : array) {
+            if (visited.contains(element) == false) {
+                list2.add(element);
             }
         }
-    }
-    System.out.println("this is result是在list中的编号" + result);
+        //得到 list 元素的 index。
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < list2.size(); i++) {
+            for (int j = 0; j < list.size(); j++) {
+                if (list.get(j).getName().equals(list2.get(i))) {
+                    result.add(j);
+                }
+            }
+        }
+        System.out.println("this is result是在list中的编号" + result);
 //查询list2 中节点信息。 并且储存
-    List<Double> compare = new ArrayList<>();
-    List<Double> compare2 = new ArrayList<>();
-    pointWay current = list.get(currentStatus);
-    pointWay end = list.get(5);
+        List<Double> compare = new ArrayList<>();
+        List<Double> compare2 = new ArrayList<>();
+        pointWay current = list.get(currentStatus);
+        pointWay end = list.get(5);
 
 
-    for (int i = 0; i < result.size(); i++) {
-        pointWay children = list.get(result.get(i));
-        double distance = pointWayService.calculateDistance(current.getLat().doubleValue(), current.getLng().doubleValue(), children.getLat().doubleValue(), children.getLng().doubleValue());
-        double Heuristic = pointWayService.calculateDistance(end.getLat().doubleValue(), end.getLng().doubleValue(), children.getLat().doubleValue(), children.getLng().doubleValue());
-        compare.add(distance + Heuristic);
-        compare2.add(distance + Heuristic);
-    }
+        for (int i = 0; i < result.size(); i++) {
+            pointWay children = list.get(result.get(i));
+            double distance = pointWayService.calculateDistance(current.getLat().doubleValue(), current.getLng().doubleValue(), children.getLat().doubleValue(), children.getLng().doubleValue());
+            double Heuristic = pointWayService.calculateDistance(end.getLat().doubleValue(), end.getLng().doubleValue(), children.getLat().doubleValue(), children.getLng().doubleValue());
+            compare.add(distance + Heuristic);
+            compare2.add(distance + Heuristic);
+        }
 
 
 //计算list2 的距离现在节点的距离
-    Collections.sort(compare2);
-    int bestPoint = 0;
+        Collections.sort(compare2);
+        int bestPoint = 0;
         for (int i = 0; i < compare.size(); i++) {
             if (compare.get(i).equals(compare2.get(0))) {
                 bestPoint = i;
             }
         }
 //相互比较，选择最优解，然后将最优解存入list3 将list2 存入set，并且初始化list2
-    path.add(list.get(result.get(bestPoint)).getName());
-    for (int i = 0; i < list2.size(); i++) {
-        visited.add(list2.get(i));
-    }
-    System.out.println(path);
+        path.add(list.get(result.get(bestPoint)).getName());
+        for (int i = 0; i < list2.size(); i++) {
+            visited.add(list2.get(i));
+        }
+        System.out.println(path);
 
         for (int i = 0; i < list.size(); i++) {
             if (path.get(path.size()-1) == list.get(i).getName()) {
@@ -278,56 +340,40 @@ public class ParkingController {
 //直到到达目的地。
 //然后比较几个停车场的距离，最短的为最优解。
 
-    System.out.println(visited);
-    return ResponseResult.okResult(200,"ok",pointWayService.calculateDistance(list.get(1).getLat().doubleValue(),list.get(1).getLng().doubleValue(),list.get(2).getLat().doubleValue(),list.get(2).getLng().doubleValue()));
-}
-@RequestMapping("/getTotalNum")
-public  ResponseResult getTotalLot(){
+        System.out.println(visited);
+        return ResponseResult.okResult(200,"ok",pointWayService.calculateDistance(list.get(1).getLat().doubleValue(),list.get(1).getLng().doubleValue(),list.get(2).getLat().doubleValue(),list.get(2).getLng().doubleValue()));
+    }
+    @RequestMapping("/getTotalNum")
+    public  ResponseResult getTotalLot(){
 
-    // Initialize the variable to store the total count
-    int total = 0;
+        // Initialize the variable to store the total count
+        int total = 0;
 
 // Create a QueryWrapper object to query the data
-    QueryWrapper queryWrapper = new QueryWrapper();
+        QueryWrapper queryWrapper = new QueryWrapper();
+        List<amount> amounts= amountMapper.selectList(null);
+        for (amount item: amounts)
+        {
+            total=total+ item.getAmount();
 
-// Add the "like" condition to filter the data by type
-    queryWrapper.like("type","parking");
 
-// Get the list of data that matches the query condition
-    List<pointWay> list = pointWayMapper.selectList(queryWrapper);
+        }
 
-// Loop through the list to get the total count
-    for(pointWay item : list) {
-        // Get the string value of the type field
-        String str = item.getType();
-        // Find the start index of the count string
-        int startIndex = str.indexOf(": ");
-        // Find the end index of the count string
-        int endIndex = str.indexOf(")");
-        // Get the count string
-        String subString = str.substring(startIndex+2, endIndex);
-        // Convert the count string to integer
-        int a = Integer.parseInt(subString);
-        // Add the count to the total count
-        total = a + total;
-        // Print the count for debugging purpose
-        System.out.println(a+1);
-    }
 
 // Return the result with the status code 200 and the total count
-    return ResponseResult.okResult(200,"ok",total);
-}
+        return ResponseResult.okResult(200,"ok",total);
+    }
 
 
-@RequestMapping("/getDestination")
-public ResponseResult as(){
+    @RequestMapping("/getDestination")
+    public ResponseResult as(){
 //查询pointway的相关信息，并且直接删除
 
-    //用like寻找neighbor带 pointway.getNamede的项目，并且储存为list
-    QueryWrapper<pointWay> queryWrapper =new QueryWrapper<>();
-    // 预防 type
-    queryWrapper.like("type", "Destination");
-    return ResponseResult.okResult(200,"ok",pointWayMapper.selectList(queryWrapper));}
+        //用like寻找neighbor带 pointway.getNamede的项目，并且储存为list
+        QueryWrapper<pointWay> queryWrapper =new QueryWrapper<>();
+        // 预防 type
+        queryWrapper.like("type", "Destination");
+        return ResponseResult.okResult(200,"ok",pointWayMapper.selectList(queryWrapper));}
     /**
      * Delete all instances of the specified name in the neighbor field of pointWay objects in the database.
      *
@@ -337,8 +383,8 @@ public ResponseResult as(){
     @RequestMapping("/deleteWp")
     public ResponseResult delete(@RequestBody pointWay pointWay) {
         // Create a query wrapper to search for the pointWay objects that contain the name in the neighbor field.
-       QueryWrapper<pointWay> queryWrapper3=new QueryWrapper<>();
-       queryWrapper3.eq("name",pointWay.getName());
+        QueryWrapper<pointWay> queryWrapper3=new QueryWrapper<>();
+        queryWrapper3.eq("name",pointWay.getName());
         pointWayMapper.delete(queryWrapper3);
 
         QueryWrapper<pointWay> queryWrapper = new QueryWrapper();
@@ -371,8 +417,8 @@ public ResponseResult as(){
 
     @RequestMapping("/findShortestPath")
     public ResponseResult findShortestPath(@RequestBody StartEnd startEnd) {
-       String startPoint= startEnd.getStartPoint();
-       String endPoint=startEnd.getEndPoint();
+        String startPoint= startEnd.getStartPoint();
+        String endPoint=startEnd.getEndPoint();
 // Create a set to keep track of visited nodes
         Set<String> visited = new HashSet<>();
 // Create a list to store the current node's children
@@ -425,8 +471,9 @@ public ResponseResult as(){
         return ResponseResult.okResult(200,"ok",path);
 
     }
-  @RequestMapping("/114514")
-  public ResponseResult addall(@RequestBody List<pointWay> list){
+    @RequestMapping("/reNew")
+    public ResponseResult addall(@RequestBody List<pointWay> list){
+        pointWayMapper.delete(null);
         for (pointWay item: list){
 
             pointWayMapper.insert(item);
@@ -436,7 +483,7 @@ public ResponseResult as(){
 
 
         return ResponseResult.okResult(200,"ok");
-  }
+    }
     @RequestMapping("/updatePLwp")
     public ResponseResult updatePLwp(@RequestBody uploadPL uploadPL) {
         // Get the id and then query in the amount
@@ -502,67 +549,71 @@ public ResponseResult as(){
 
 
     @Autowired
-  private   DestinationAndParkingService destinationAndParkingService;
+    private   DestinationAndParkingService destinationAndParkingService;
 
- @RequestMapping("/getPath")
- public ResponseResult getPath(@RequestBody pointWay pointWay){
-        String id =  pointWay.getName();
-        QueryWrapper queryWrapper =new QueryWrapper();
-        queryWrapper.eq("start",id);
-        QueryWrapper queryWrapper1=new QueryWrapper();
-        List<feedBackResult> amountList = new ArrayList<>();
-     QueryWrapper queryWrapper2=new QueryWrapper();
+    @RequestMapping("/getPath")
+    public ResponseResult getPath(@RequestBody pointWay pointWay,@RequestHeader("Authorization") String authorization){
+        if (authorization.equals("apollo")){
+            String id =  pointWay.getName();
+            QueryWrapper queryWrapper =new QueryWrapper();
+            queryWrapper.eq("start",id);
+            QueryWrapper queryWrapper1=new QueryWrapper();
+            List<feedBackResult> amountList = new ArrayList<>();
+            QueryWrapper queryWrapper2=new QueryWrapper();
+            QueryWrapper queryWrapper3 =new QueryWrapper();
 
-        List<pathAndDis> list= pathanddisMapper.selectList(queryWrapper);
-       list.sort(Comparator.comparingDouble(pathAndDis::getDistance));
-        for (pathAndDis item : list){
+            List<pathAndDis> list= pathanddisMapper.selectList(queryWrapper);
+            list.sort(Comparator.comparingDouble(pathAndDis::getDistance));
+            for (pathAndDis item : list){
 
-            queryWrapper1.eq("name",item.getEnd());
-            amount amount =amountMapper.selectOne(queryWrapper1);
-            if (amount.getExist()<amount.getAmount()){
-                queryWrapper2.eq("id",item.getEnd());
-                feedBackResult feedBackResult=new feedBackResult();
-                //amount.getAmount(),amount.getExist()
-                feedBackResult.setParkingLotAmount(amount.getAmount());
-                feedBackResult.setParkingLotExist(amount.getExist());
-                feedBackResult.setParkingLotId(item.getEnd());
-                feedBackResult.setParkingLotName( destinationAndParkingService.getOne(queryWrapper2).getName());
-                int distance =(int)(item.getDistance()*1000);
-                System.out.println(distance);
-                feedBackResult.setDistance(distance);
-                feedBackResult.setRunTime((int)(item.getDistance()/20*100));
-                feedBackResult.setWalkTime((int)((item.getDistance()/5*100)));
-                amountList.add(feedBackResult);
+                queryWrapper1.eq("name",item.getEnd());
+                amount amount =amountMapper.selectOne(queryWrapper1);
+                if (amount.getExist()<amount.getAmount()){
+                    queryWrapper2.eq("id",item.getEnd());
+                    feedBackResult feedBackResult=new feedBackResult();
+                    //amount.getAmount(),amount.getExist()
+                    feedBackResult.setParkingLotAmount(amount.getAmount());
+                    feedBackResult.setParkingLotExist(amount.getExist());
+                    feedBackResult.setParkingLotId(item.getEnd());
+                    feedBackResult.setParkingLotName( destinationAndParkingService.getOne(queryWrapper2).getName());
+                    int distance =(int)(item.getDistance()*1000);
+                    System.out.println(distance);
+                    feedBackResult.setDistance(distance);
+                    queryWrapper3.eq("name",item.getEnd());
+                    feedBackResult.setLNG(pointWayMapper.selectOne(queryWrapper3).getLng().doubleValue());
+                    feedBackResult.setLAT(pointWayMapper.selectOne(queryWrapper3).getLat().doubleValue());
+                    amountList.add(feedBackResult);
+                }
+                queryWrapper3.clear();
+                queryWrapper2.clear();
+                queryWrapper1.clear();
+
+
+            }
+            List<feedBackResult> finalList=new ArrayList<>();
+            for (int i = 0 ;i<=4;i++){
+                finalList.add(amountList.get(i));
             }
 
-            queryWrapper2.clear();
-          queryWrapper1.clear();
 
+            return ResponseResult.okResult(200,"ok",finalList);}
+        return ResponseResult.errorResult(400,"no token");
 
-        }
-        List<feedBackResult> finalList=new ArrayList<>();
-        for (int i = 0 ;i<=4;i++){
-            finalList.add(amountList.get(i));
-        }
-
-
-        return ResponseResult.okResult(200,"ok",finalList);
- }
- @RequestMapping("/tta")
- public  ResponseResult qw(){
+    }
+    @RequestMapping("/tta")
+    public  ResponseResult qw(){
         destinationAndParkingMapper.selectList(null);
-
-
         return ResponseResult.okResult(200,"ok",destinationAndParkingMapper.selectList(null));
- }
-@RequestMapping("/getAllDestination")
-public ResponseResult getAllDestination(){
-        QueryWrapper queryWrapper=new QueryWrapper();
-        queryWrapper.eq("type","Destination");
-        List<DestinationAndParking> list  = destinationAndParkingMapper.selectList(queryWrapper);
-
-        return ResponseResult.okResult(200,"ok",list);
-}
+    }
+    @RequestMapping("/getAllDestination")
+    public ResponseResult getAllDestination(@RequestHeader("Authorization") String authorization){
+        if(authorization.equals("apollo")){
+            QueryWrapper queryWrapper=new QueryWrapper();
+            queryWrapper.eq("type","Destination");
+            List<DestinationAndParking> list  = destinationAndParkingMapper.selectList(queryWrapper);
+            return ResponseResult.okResult(200,"ok",list);}
+        return ResponseResult.errorResult(400,"no token");
+    }
 
     /**
      * This method sets all destinations and parking lots.
@@ -616,12 +667,10 @@ public ResponseResult getAllDestination(){
             DestinationAndParking destinationAndParking = new DestinationAndParking(id, name, "Parking lot");
             list1.add(destinationAndParking);
         }
-
         // Loop through all items in list1 and insert them into the destinationAndParkingMapper.
         for (DestinationAndParking item : list1) {
             destinationAndParkingMapper.insert(item);
         }
-
         // Return a ResponseResult object with status code 200 and message "ok".
         return ResponseResult.okResult(200, "ok", list1);
     }
@@ -629,43 +678,19 @@ public ResponseResult getAllDestination(){
 
 
     @RequestMapping("/getdis")
-public ResponseResult dis(@RequestBody List<pathAndDis> pathAndDis){
+    public ResponseResult dis(@RequestBody List<pathAndDis> pathAndDis){
         for (int i =0;i<pathAndDis.size();i++){
             System.out.println(pathAndDis.get(i)+"dfddf");
-           pathAndDisService.save(pathAndDis.get(i));
+            pathAndDisService.save(pathAndDis.get(i));
         }
-
-        return ResponseResult.okResult(200,"ok");
-}
+        return ResponseResult.okResult(200,"ok");}
 
     @RequestMapping("/thisTest")
-    public ResponseResult test(@RequestBody   StartEnd startEnd){
-        QueryWrapper queryWrapper=new QueryWrapper();
-        queryWrapper.like("type","Destination");
-        QueryWrapper queryWrapper2=new QueryWrapper();
-        queryWrapper2.like("type","Parking lot");
-        //得到所有起点的实体类
-        List<pointWay> dest= pointWayMapper.selectList(queryWrapper);
-        //得到所有停车场的实体类
-        List<pointWay> parking=pointWayMapper.selectList(queryWrapper2);
-       // StartEnd startEnd=new StartEnd();
-        List<pathAndDis> path=new ArrayList<>();
-      /*  for (int i =1;i<dest.size();i++){
-            for (int j =0;j<parking.size();j++){
-                startEnd.setStartPoint(dest.get(i).getName());
-                startEnd.setEndPoint(parking.get(j).getName());
-
-            }
-
-
-        }*/
-        pointWayService.getDistance(startEnd);
-        pathAndDis pathAndDis=new pathAndDis(startEnd.getStartPoint(),startEnd.getEndPoint(), pointWayService.getDistance(startEnd));
-        path.add(pathAndDis);
-
-
-        pointWayService.getDistance(startEnd);
-        return ResponseResult.okResult(200,"ok", path);
-
+    public ResponseResult test() {
+return ResponseResult.okResult(200,"2",destinationAndParkingMapper.selectList(null));
     }
- }
+
+
+
+
+}
