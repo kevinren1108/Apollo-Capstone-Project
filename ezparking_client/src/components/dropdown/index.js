@@ -60,7 +60,7 @@ export const Dropdown = (props) => {
       >
         <div className="mx-2 my-2 bg-blue-300 rounded-md scale-100 opacity-100">
           <Menu.Items className="absolute right-0 z-10 mt-0.3 w-full origin-top-right rounded-md bg-blue-300 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-            <div className="py-1 overflow-y-auto h-72 ...">
+            <div className="py-1 overflow-y-auto h-96">
               {result.map((dest, index) => {
                 return (
                   <DropdownCard name={dest.name} id={dest.id} key={index} />

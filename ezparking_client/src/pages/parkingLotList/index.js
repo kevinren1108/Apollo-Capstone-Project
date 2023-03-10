@@ -30,8 +30,8 @@ function ParkingLotList() {
     <div className="mb-auto overflow-y-auto h-1/1 ...">
       <DestinationHeader destination={dropdownSelectionName} />
       <div className="grid grid-cols-12">
-        <div class="bg-gradient-to-b from-sky-400 via-sky-200 to-yellow-200 ... ml-2 my-2 rounded-md flex items-center">
-          <div class=" h-5/6 grid grid-cols-1 gap-4 content-between ... ">
+        <div className="bg-gradient-to-b from-sky-400 via-sky-200 to-yellow-200 ... ml-2 my-2 rounded-md flex items-center">
+          <div className=" h-5/6 grid grid-cols-1 gap-4 content-between ... ">
             <div className="-rotate-90  font-semibold ... text-base text-rose-500">
               Near
             </div>
