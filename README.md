@@ -24,6 +24,8 @@ OR CHECKOUT OUR [Live Demo](https://urezparking.com/)
 
 [Project vlog video #5](https://youtu.be/k2uPJct-0C8) 
 
+[Project vlog video #6 AKA Final Demno](https://youtu.be/qRdufaFVSw4)
+
 ## Report
 [Vehicle Counting System AI Report](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/ezparking_frontend/README.md)
 
