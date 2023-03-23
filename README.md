@@ -59,7 +59,7 @@ OR CHECKOUT OUR [Live Demo](https://urezparking.com/)
 
 ## Roadmap
 [Project Roadmap](https://cultured-attraction-29e.notion.site/09f98feff5954c5eae4582e951a5a931?v=146a5f3935934354ac3b003aadd3a395)
-![roadmap](https://user-images.githubusercontent.com/6381488/205512707-b87c0dc8-df66-4be7-a8cd-6d0cd0d8cd1c.PNG)
+[![roadmap](https://user-images.githubusercontent.com/55067409/227371405-10a2d62c-27d9-4172-8d63-92957ac1c530.PNG)](https://cultured-attraction-29e.notion.site/09f98feff5954c5eae4582e951a5a931?v=146a5f3935934354ac3b003aadd3a395)
 
 ## License 
 [MIT Licence](https://www.mit.edu/~amini/LICENSE.md)
