@@ -10,6 +10,8 @@ OR CHECKOUT OUR [Live Demo](https://urezparking.com/)
 
 [Ezparking AI detector run locally](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/ezparking_ai_detector/README.md)
 
+## Commercial
+[Ezparking Commercial](https://youtu.be/O7K-yJcxkeY)
 
 ## Project vlogs
 [Project vlog video #1](https://youtu.be/MFvi8rMCnk8)
