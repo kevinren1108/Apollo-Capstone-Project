@@ -2,7 +2,7 @@
 Driving is one of the preferred means of transportation for modern people, and vehicles have brought people a lot of convenience. At the same time, finding a parking space is also a problem that every driver must face. A suitable parking space near the destination is very important for people, it can shorten the walking time for users to reach the destination. Therefore, it is necessary to have software that can query the nearest suitable parking space for the user. It saves the user time to find a parking space and avoids unnecessary walking distance for the user.
 
 ## How to use
-[Ezparking myAdmin run locally](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/ezparking_frontend/README.md)
+[Ezparking myAdmin run locally](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/ezparking_myadmin/README.md)
 OR CHECKOUT OUR [Live Demo](https://singular-malabi-a5e23d.netlify.app)
 
 [Ezparking Client run locally](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/ezparking_client/README.md)
