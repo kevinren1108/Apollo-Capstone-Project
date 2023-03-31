@@ -57,7 +57,8 @@ OR CHECKOUT OUR [Live Demo](https://urezparking.com/)
 [Logo Design](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/design/logo.png)
 
 ## Milestone based project management
-We use a milestone based project management system, each task was trade as issue and posted on the [issue section](https://github.com/kevinren1108/Apollo-Capstone-Project/issues?q=is%3Aissue+is%3Aclosed) in our Github. Couple related issue will be form a [milestone](https://github.com/kevinren1108/Apollo-Capstone-Project/milestones?state=closed) and we set a dead line for each milestone.
+* [**Milestone**](https://github.com/kevinren1108/Apollo-Capstone-Project/milestones?state=closed): We use a milestone based project management system, each new realease will be trade as a milestone 
+* [**Issues**](https://github.com/kevinren1108/Apollo-Capstone-Project/issues?q=is%3Aissue+is%3Aclosed): In each release, there will be coupe tasks, we trade task as a issue on our project. We were post those issueon our github with detail about what need to be implement in this issue and assign this to group members.
 ![milestone](https://user-images.githubusercontent.com/6381488/205513873-ba5cd052-c25d-490a-8e16-d6d20395b0af.PNG)
 
 ## Roadmap
