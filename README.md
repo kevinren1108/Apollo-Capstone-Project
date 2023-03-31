@@ -29,9 +29,21 @@ OR CHECKOUT OUR [Live Demo](https://urezparking.com/)
 [Project vlog video #6 AKA Final Demno](https://youtu.be/qRdufaFVSw4)
 
 ## Report
-[Vehicle Counting System AI Report](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/ezparking_frontend/README.md)
+[EzParking Client Code Quality Report](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/documents/Report/Code%20Quality%20Report/EzParking_Client_Code_Quality_Report.pdf)
+
+[EzParking Myadmin Code Quality Report](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/documents/Report/Code%20Quality%20Report/EzParking_Myadmin_Code_Quality_Report.pdf)
 
 ## Testing
+[EzParking Backend Test Plan and Result](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/documents/Report/Testing%20Plan%20and%20Report/EzParking_Backend%20_Test_Plan_And_Result.pdf)
+
+[EzParking  Client Plan and Result](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/documents/Report/Testing%20Plan%20and%20Report/EzParking_Client%20_Test_Plan_And_Result.pdf)
+
+[EzParking Myadmin Test Plan and Result](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/documents/Report/Testing%20Plan%20and%20Report/EzParking_Myadmin%20_Test_Plan_And_Result.pdf)
+
+[EzParking User Testing Plan and Result](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/documents/Report/Testing%20Plan%20and%20Report/EzParking_User_Testing_Plan_And_Result.pdf)
+
+## Research
+[Yolo V5 model running on Respeberry Pi 4B 2G](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/documents/Report/Research/YoloV5%20on%20SBC%20Report.pdf)
 
 ## Documents
 [Business Case](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/documents/Planning/Business%20Case.pdf)
@@ -46,7 +58,7 @@ OR CHECKOUT OUR [Live Demo](https://urezparking.com/)
 
 [System Design](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/documents/Planning/system%20design.pdf)
 
-[Gantt Chart](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/documents/Planning/Gantt_chart_upto_MS2.4.pdf)
+[Gantt Chart](https://github.com/kevinren1108/Apollo-Capstone-Project/tree/main/documents/Gantt%20Chart)
 
 ## Design
 
@@ -59,7 +71,9 @@ OR CHECKOUT OUR [Live Demo](https://urezparking.com/)
 ## Milestone based project management
 * [**Milestone**](https://github.com/kevinren1108/Apollo-Capstone-Project/milestones?state=closed): We use a milestone based project management system, each new realease will be trade as a milestone 
 * [**Issues**](https://github.com/kevinren1108/Apollo-Capstone-Project/issues?q=is%3Aissue+is%3Aclosed): In each release, there will be coupe tasks, we trade task as a issue on our project. We were post those issueon our github with detail about what need to be implement in this issue and assign this to group members.
-![milestone](https://user-images.githubusercontent.com/6381488/205513873-ba5cd052-c25d-490a-8e16-d6d20395b0af.PNG)
+
+
+[![Milestone](https://user-images.githubusercontent.com/6381488/205513873-ba5cd052-c25d-490a-8e16-d6d20395b0af.PNG)](https://github.com/kevinren1108/Apollo-Capstone-Project/milestones?state=closed)
 
 ## Roadmap
 [Project Roadmap](https://cultured-attraction-29e.notion.site/09f98feff5954c5eae4582e951a5a931?v=146a5f3935934354ac3b003aadd3a395)
