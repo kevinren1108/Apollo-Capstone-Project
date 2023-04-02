@@ -46,6 +46,8 @@ OR CHECKOUT OUR [Live Demo](https://urezparking.com/)
 [Yolo V5 model running on Respeberry Pi 4B 2G](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/documents/Report/Research/YoloV5%20on%20SBC%20Report.pdf)
 
 ## Documents
+[Capstone Project Final Presentation](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/documents/Ezparking%20Final%20Presentation.pdf)
+
 [Business Case](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/documents/Planning/Business%20Case.pdf)
 
 [Project Charter](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/documents/Planning/Project%20Charter.pdf)
