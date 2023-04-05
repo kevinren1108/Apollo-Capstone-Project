@@ -48,6 +48,8 @@ OR CHECKOUT OUR [Live Demo](https://urezparking.com/)
 ## Documents
 [Capstone Project Final Presentation](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/documents/Ezparking%20Final%20Presentation.pdf)
 
+[Project Experience Report](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/documents/EzParking_Project_Experience_Report.pdf)
+
 [Business Case](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/documents/Planning/Business%20Case.pdf)
 
 [Project Charter](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/documents/Planning/Project%20Charter.pdf)
