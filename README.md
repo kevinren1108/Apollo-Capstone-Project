@@ -1,3 +1,4 @@
+![download](https://github.com/kevinren1108/Apollo-Capstone-Project/assets/6381488/5a4fe7f2-7599-495c-8da5-da1fa4cb0ea4)
 # Team Apollo Capstone Project
 Driving is one of the preferred means of transportation for modern people, and vehicles have brought people a lot of convenience. At the same time, finding a parking space is also a problem that every driver must face. A suitable parking space near the destination is very important for people, it can shorten the walking time for users to reach the destination. Therefore, it is necessary to have software that can query the nearest suitable parking space for the user. It saves the user time to find a parking space and avoids unnecessary walking distance for the user.
 
