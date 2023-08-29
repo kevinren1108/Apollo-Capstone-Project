@@ -3,10 +3,8 @@ Driving is one of the preferred means of transportation for modern people, and v
 
 ## How to use
 [Ezparking myAdmin run locally](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/ezparking_myadmin/README.md)
-OR CHECKOUT OUR [Live Demo](https://singular-malabi-a5e23d.netlify.app)
 
 [Ezparking Client run locally](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/ezparking_client/README.md)
-OR CHECKOUT OUR [Live Demo](https://urezparking.com/)
 
 [Ezparking AI detector run locally](https://github.com/kevinren1108/Apollo-Capstone-Project/blob/main/ezparking_ai_detector/README.md)
 
